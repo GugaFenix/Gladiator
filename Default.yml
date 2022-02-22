@@ -1,0 +1,87 @@
+# Plugin de Gladiador para LegionMC Network
+# Author: GugaFenix
+
+# ______________ Variáveis ______________
+
+# %glad_tag% Prefixo do plugin
+# %glad_clan% Exibe a tag do clã do jogador
+# %glad_timetostart% Tempo restante para o início do evento
+# %glad_NumClãs% Número de clãs no evento
+# %glad_Clans% Lista dos clãs no evento
+# %glad_NumPlayers% Número de players no evento
+# %glad_TimeToDeathMatch% Tempo restante até o deathmatch
+# %glad_enemies% Quantidade de clãs inimigos
+# %glad_kills% Número de kills do player
+# %glad_LasClanPlayers% Quantidade de players restantes do próprio clã
+
+# Configurações do evento
+# Mundo -> Mundo em que o evento ocorrerá
+# TempoParaIniciar -> Tempo desde o primeiro aviso até o início do evento
+# NumAvisos -> Quantidade de avisos qoe serão exibidos até o evento iniciar
+Evento:
+  Mundo: 'World'
+  TempoParaIniciar: 30
+  TempoEntreAvisos: 1
+  
+DeathMatch:
+  NumPlayers: 5
+  NumClãs: 3
+  Mundo: 'World'
+    
+    
+# Configurações da borda
+# Inicio -> Tamanho inicial da borda
+# Redução -> Quantidade de blocos que a borda reduzirá após o tempo definido
+# TempoReducao -> De quanto em quanto tempo a borda diminuirá
+# Centro -> Coordenadas do centro da borda
+Borda:
+  Dano: 2
+  Tamanho:
+    Inicio: 1000
+    Reducao: 10
+    TempoReducao: 1
+  Centro:
+    X: 0
+    Y: 100
+    Z: 0
+    
+    
+# Configurações dos clãs participantes
+# MaxMembros -> Máximo de participantes por clã
+# MinDinheiro -> Mínimo de dinheiro no banco do clã
+Clan:
+  MaxMembros: 20
+  MinDinehiro: 20000
+
+# Mensagem de aviso    
+# Titulo -> Título que será enviado ao player juntamente ao Subtítulo
+Aviso: 
+  -  '%glad_tag%'
+  -  '&bEvento gladiador iniciando...'
+  -  '&dEscolha os melhores membros do seu clã para lutar!'
+  -  '&aUse &3/glad entrar para participar do gladiador'
+Titulo: '%glad_tag%'
+Subtitulo: '&7Evento gladiador iniciando em &f%glad_timetostart% &7minutos'
+
+# Configuração da scoreboard
+#______________________________________________
+# OBSERVAÇÃO -> SÃO PERMITIDAS APENAS 16 LINHAS
+#______________________________________________
+Scoreboard:
+  -  '&f&lLegionMC | %glad_tag%'
+  -  '&bSeu clã: %glad_clan%'
+  -  ''
+  -  '&3Suas kills: &7%glad_kills%'
+  -  '&3Membros do clã restantes:'
+  -  '&d%LastClanPlayers%'
+  -  ''
+  -  '&6Players vivos: &f%glad_NumPlayers%'
+  -  '&6Clãs vivos: &f%NumClans%'
+  
+  
+# Localizações onde os players iniciarão a luta no gladiador
+# Preset ->   -  'X:Y:Z'
+Spawns:
+  -  '0:100:0'
+  
+  
