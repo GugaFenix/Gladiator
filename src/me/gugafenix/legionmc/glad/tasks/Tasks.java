@@ -23,11 +23,11 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Tasks {
 	private Gladiator glad;
-	private BukkitTask sendWarns, checkSelection, startBattle;
+	private BukkitTask sendWarns, checkSelection, startBattle, deathMatch;
 	private TaskId id;
 	
 	public enum TaskId {
-		SEND_WARNS, CHECK_SELECTION, START_BATTLE;
+		SEND_WARNS, CHECK_SELECTION, START_BATTLE, DEATHMATCH;
 	}
 	
 	public Tasks(TaskId id, Gladiator glad) {
@@ -49,7 +49,9 @@ public class Tasks {
 		case START_BATTLE:
 			task = runStartBattleTask();
 			break;
-		
+		case DEATHMATCH:
+			task = runDeathMatchTask();
+			break;
 		default:
 			break;
 		}
@@ -71,13 +73,12 @@ public class Tasks {
 					glad.getPlayers().forEach(gps -> gps.setSelectionStatus(SelectionStatus.SELECTING));
 					
 					// Warn
-					if(glad.getAllClans().size() <= 1) {
+					if (glad.getAllClans().size() <= 1) {
 						Bukkit.getOnlinePlayers().forEach(all -> {
-							all.sendMessage(Main.tag + "§9O gladiador foi cancelado por falta de clãs");
+							all.sendMessage(Main.tag + "ï¿½9O gladiador foi cancelado por falta de clï¿½s");
 							glad.cancel();
 						});
 					}
-					
 					
 					runSelectionCheckTask();
 					glad.setStatus(GladiatorStatus.SELECTING);
@@ -93,7 +94,7 @@ public class Tasks {
 				// Todos os players
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					
-					// Check se o player já está no gladiador
+					// Check se o player jï¿½ estï¿½ no gladiador
 					if (Main.getPlayerManager().getPlayer(p) != null) continue;
 					
 					// Clear chat
@@ -111,6 +112,30 @@ public class Tasks {
 		}.runTaskTimerAsynchronously(Main.getMain(), 0, 20);
 	}
 	
+	private BukkitTask runDeathMatchTask() {
+		glad.getWorld().setPVP(false);
+		return deathMatch = new BukkitRunnable() {
+			int i = 10;
+			
+			@Override
+			public void run() {
+				if (i > 0) {
+					
+					for (GladPlayer gp : glad.getPlayers())
+						API.getApi().sendTitle("Â§bDEATH MATCH", "Â§biniciando em Â§3" + i, gp.getPlayer());
+					
+					i--;
+				} else {
+					glad.getWorld().setPVP(true);
+					for (GladPlayer gp : glad.getPlayers())
+						API.getApi().sendTitle("Â§bO death match iniciou ", "Â§3Â§lLUTE!" + i, gp.getPlayer());
+					this.cancel();
+					
+				}
+			}
+		}.runTaskTimerAsynchronously(Main.getMain(), 0, 20);
+	}
+	
 	private void sendWarn(Player p) {
 		for (String msg : glad.getWarns()) { p.sendMessage(replace(p, msg)); }
 		API.getApi().sendTitle(replace(p, glad.getTitle()), replace(p, glad.getSubtitle()), p);
@@ -123,7 +148,8 @@ public class Tasks {
 		glad.setStatus(GladiatorStatus.SELECTING);
 		
 		glad.getPlayers().forEach(p -> {
-			p.getPlayer().sendMessage(Main.tag + "§bO evento gladiador será iniciado assim que todos os guerreiros estiverem selecionados, prepare-se para a batalha!");
+			p.getPlayer().sendMessage(Main.tag
+					+ "Â§bO evento gladiador serÃ¡ iniciado assim que todos os guerreiros estiverem selecionados, prepare-se para a batalha!");
 			API.getApi().playSound(p.getPlayer(), Sound.ANVIL_USE);
 		});
 		
@@ -135,7 +161,7 @@ public class Tasks {
 				
 				glad.getPlayers().forEach(p -> {
 					
-					// Check se não é o lider e se está pronto
+					// Check se nï¿½o ï¿½ o lider e se estï¿½ pronto
 					if (p.getClan().getLider() != Jogador.check(p.getPlayer())) return;
 					
 					// Todos selecionados
@@ -145,9 +171,9 @@ public class Tasks {
 						return;
 					}
 					
-					// Todos os players que ainda estão selecionando
+					// Todos os players que ainda estï¿½o selecionando
 					if (p.getSelectionStatus() == SelectionStatus.SELECTING) {
-						// Se já se passaram 5 segundos
+						// Se jï¿½ se passaram 5 segundos
 						if (i < 5) i++;
 						else {
 							
@@ -155,14 +181,14 @@ public class Tasks {
 							for (int j = 0; j < 200; j++) p.getPlayer().sendMessage("");
 							
 							// Send select message
-							p.getPlayer().sendMessage("§e§l§m----§6§l§m--------" + Main.tag + "§6§l§m --------§e§l§m---");
-							p.getPlayer().sendMessage("§3Você se propos a desafiar outros clãs em uma batalha mortal");
+							p.getPlayer().sendMessage("ï¿½eï¿½lï¿½m----ï¿½6ï¿½lï¿½m--------" + Main.tag + "ï¿½6ï¿½lï¿½m --------ï¿½eï¿½lï¿½m---");
+							p.getPlayer().sendMessage("ï¿½3Vocï¿½ se propos a desafiar outros clï¿½s em uma batalha mortal");
 							p.getPlayer().sendMessage("");
-							p.getPlayer().sendMessage("§3Agora, escolha aqueles que lutarão ao seu lado por " + p.getClan().getTagClan());
-							TextComponent t = new TextComponent("§6§l§m-----------§8§l[§6§lSelecionar Guerreiros§8§l]§6§l§m-------------");
+							p.getPlayer().sendMessage("Â§3Agora, escolha aqueles que lutarï¿½o ao seu lado por " + p.getClan().getTagClan());
+							TextComponent t = new TextComponent("ï¿½6ï¿½lï¿½m-----------ï¿½8ï¿½l[ï¿½6ï¿½lSelecionar Guerreirosï¿½8ï¿½l]ï¿½6ï¿½lï¿½m-------------");
 							t.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/gladiador selecionarguerreiros"));
 							t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-									new ComponentBuilder("§cClique aqui para selecionar os membros do seu clã que participarão do evento")
+									new ComponentBuilder("ï¿½cClique aqui para selecionar os membros do seu clï¿½ que participarï¿½o do evento")
 											.create()));
 							p.getPlayer().spigot().sendMessage(t);
 							
@@ -187,7 +213,7 @@ public class Tasks {
 				
 				if (glad.getTimeToStart() > 1) {
 					for (GladPlayer p : glad.getPlayers()) {
-						API.getApi().sendTitle("§b§lIniciando batalha em", "§3§l" + glad.getTimeToStart() + "§b§l segundos", p.getPlayer());
+						API.getApi().sendTitle("ï¿½bï¿½lIniciando batalha em", "ï¿½3ï¿½l" + glad.getTimeToStart() + "ï¿½bï¿½l segundos", p.getPlayer());
 						API.getApi().playSound(p.getPlayer(), Sound.CLICK);
 					}
 					glad.setTimeToStart(glad.getTimeToStart() - (1));
@@ -197,7 +223,7 @@ public class Tasks {
 						// Clear chat
 						for (int j = 0; j < 100; j++) p.getPlayer().sendMessage("");
 						p.getPlayer().teleport(glad.getWorld().getSpawnLocation());
-						API.getApi().sendTitle("§b§lBatalha iniciada", "§3§lLUTE!", p.getPlayer());
+						API.getApi().sendTitle("ï¿½bï¿½lBatalha iniciada", "ï¿½3ï¿½lLUTE!", p.getPlayer());
 						API.getApi().playSound(p.getPlayer(), Sound.ENDERDRAGON_DEATH);
 						Bukkit.getScheduler().runTask
 						
@@ -231,7 +257,7 @@ public class Tasks {
 	
 	public void setId(TaskId id) { this.id = id; }
 	
-	private String replace(Player p, String string) { return PlaceholderAPI.setPlaceholders(p, string).replace("&", "§"); }
+	private String replace(Player p, String string) { return PlaceholderAPI.setPlaceholders(p, string).replace("&", "ï¿½"); }
 	
 	private boolean hasPlayerSelecting() {
 		for (GladPlayer p : glad.getPlayers()) {

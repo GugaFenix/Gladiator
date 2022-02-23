@@ -1,23 +1,23 @@
 # Plugin de Gladiador para LegionMC Network
 # Author: GugaFenix
 
-# ______________ Variáveis ______________
+# ______________ Variï¿½veis ______________
 
 # %glad_tag% Prefixo do plugin
-# %glad_clan% Exibe a tag do clã do jogador
-# %glad_timetostart% Tempo restante para o início do evento
-# %glad_NumClãs% Número de clãs no evento
-# %glad_Clans% Lista dos clãs no evento
-# %glad_NumPlayers% Número de players no evento
-# %glad_TimeToDeathMatch% Tempo restante até o deathmatch
-# %glad_enemies% Quantidade de clãs inimigos
-# %glad_kills% Número de kills do player
-# %glad_LasClanPlayers% Quantidade de players restantes do próprio clã
+# %glad_clan% Exibe a tag do clï¿½ do jogador
+# %glad_timetostart% Tempo restante para o inï¿½cio do evento
+# %glad_NumClï¿½s% Nï¿½mero de clï¿½s no evento
+# %glad_Clans% Lista dos clï¿½s no evento
+# %glad_NumPlayers% Nï¿½mero de players no evento
+# %glad_TimeToDeathMatch% Tempo restante atï¿½ o deathmatch
+# %glad_enemies% Quantidade de clï¿½s inimigos
+# %glad_kills% Nï¿½mero de kills do player
+# %glad_LasClanPlayers% Quantidade de players restantes do prï¿½prio clï¿½
 
-# Configurações do evento
-# Mundo -> Mundo em que o evento ocorrerá
-# TempoParaIniciar -> Tempo desde o primeiro aviso até o início do evento
-# NumAvisos -> Quantidade de avisos qoe serão exibidos até o evento iniciar
+# Configuraï¿½ï¿½es do evento
+# Mundo -> Mundo em que o evento ocorrerï¿½
+# TempoParaIniciar -> Tempo desde o primeiro aviso atï¿½ o inï¿½cio do evento
+# NumAvisos -> Quantidade de avisos qoe serï¿½o exibidos atï¿½ o evento iniciar
 Evento:
   Mundo: 'World'
   TempoParaIniciar: 30
@@ -25,14 +25,14 @@ Evento:
   
 DeathMatch:
   NumPlayers: 5
-  NumClãs: 3
+  NumClÃ£s: 3
   Mundo: 'World'
     
     
-# Configurações da borda
+# ConfiguraÃ§Ãµes da borda
 # Inicio -> Tamanho inicial da borda
-# Redução -> Quantidade de blocos que a borda reduzirá após o tempo definido
-# TempoReducao -> De quanto em quanto tempo a borda diminuirá
+# Reduï¿½ï¿½o -> Quantidade de blocos que a borda reduzirï¿½ apï¿½s o tempo definido
+# TempoReducao -> De quanto em quanto tempo a borda diminuirï¿½
 # Centro -> Coordenadas do centro da borda
 Borda:
   Dano: 2
@@ -46,40 +46,40 @@ Borda:
     Z: 0
     
     
-# Configurações dos clãs participantes
-# MaxMembros -> Máximo de participantes por clã
-# MinDinheiro -> Mínimo de dinheiro no banco do clã
+# Configuraï¿½ï¿½es dos clï¿½s participantes
+# MaxMembros -> Mï¿½ximo de participantes por clï¿½
+# MinDinheiro -> Mï¿½nimo de dinheiro no banco do clï¿½
 Clan:
   MaxMembros: 20
   MinDinehiro: 20000
 
 # Mensagem de aviso    
-# Titulo -> Título que será enviado ao player juntamente ao Subtítulo
+# Titulo -> Tï¿½tulo que serï¿½ enviado ao player juntamente ao Subtï¿½tulo
 Aviso: 
   -  '%glad_tag%'
   -  '&bEvento gladiador iniciando...'
-  -  '&dEscolha os melhores membros do seu clã para lutar!'
+  -  '&dEscolha os melhores membros do seu clï¿½ para lutar!'
   -  '&aUse &3/glad entrar para participar do gladiador'
 Titulo: '%glad_tag%'
 Subtitulo: '&7Evento gladiador iniciando em &f%glad_timetostart% &7minutos'
 
-# Configuração da scoreboard
+# Configuraï¿½ï¿½o da scoreboard
 #______________________________________________
-# OBSERVAÇÃO -> SÃO PERMITIDAS APENAS 16 LINHAS
+# OBSERVAï¿½ï¿½O -> Sï¿½O PERMITIDAS APENAS 16 LINHAS
 #______________________________________________
 Scoreboard:
   -  '&f&lLegionMC | %glad_tag%'
-  -  '&bSeu clã: %glad_clan%'
+  -  '&bSeu clï¿½: %glad_clan%'
   -  ''
   -  '&3Suas kills: &7%glad_kills%'
-  -  '&3Membros do clã restantes:'
+  -  '&3Membros do clï¿½ restantes:'
   -  '&d%LastClanPlayers%'
   -  ''
   -  '&6Players vivos: &f%glad_NumPlayers%'
-  -  '&6Clãs vivos: &f%NumClans%'
+  -  '&6Clï¿½s vivos: &f%NumClans%'
   
   
-# Localizações onde os players iniciarão a luta no gladiador
+# Localizaï¿½ï¿½es onde os players iniciarï¿½o a luta no gladiador
 # Preset ->   -  'X:Y:Z'
 Spawns:
   -  '0:100:0'

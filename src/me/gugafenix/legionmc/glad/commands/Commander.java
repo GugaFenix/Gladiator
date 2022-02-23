@@ -11,6 +11,7 @@ import me.gugafenix.legionmc.glad.commands.arguments.Help;
 import me.gugafenix.legionmc.glad.commands.arguments.Join;
 import me.gugafenix.legionmc.glad.commands.arguments.Leave;
 import me.gugafenix.legionmc.glad.commands.arguments.SelectWarriors;
+import me.gugafenix.legionmc.glad.commands.arguments.SetSpawnPoints;
 import me.gugafenix.legionmc.glad.commands.arguments.Start;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
@@ -62,6 +63,10 @@ public class Commander extends Command {
 			case "leave":
 				new Leave().execute(p, cmd, args);
 				break;
+			case "setspawnpoints":
+				if (args.length < 2) p.sendMessage("§cUse /glad setspawnpoints <preset>");
+				new SetSpawnPoints().execute(p, cmd, args);
+				break;
 			default:
 				p.sendMessage(Main.tag + "§cComando não encontrado");
 				p.playSound(p.getLocation(), Sound.VILLAGER_NO, 10, 10);
@@ -91,6 +96,7 @@ public class Commander extends Command {
 		else if (arg.equalsIgnoreCase("sair") || arg.equalsIgnoreCase("quitar")) return "leave";
 		else if (arg.equalsIgnoreCase("assistir") || arg.equalsIgnoreCase("camarote")) return "watch";
 		else if (arg.equalsIgnoreCase("info")) return "log";
+		else if (arg.equalsIgnoreCase("setspawns")) return "setspawnpoints";
 		else return arg;
 		
 		return null;
