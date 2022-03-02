@@ -29,7 +29,7 @@ public class Help {
 				
 			} else if (args[1].equalsIgnoreCase("equipe")) {
 				
-				String string = "Criar - Gera um template de gladiador,iniciar - Inicia o evento,parar - Cancela o evento,forcestart - For�ar o in�cio do gladiador,Forcedeathmatch - For�a o deathmatch,Forcevencedor <tag> - For�a um cl� vencedor do gladiador,Top set - Seta o cl� top 1,Top reset - Reseta o top vit�rias do gladiador,Puxar - Transfere todos os jogadores do gladiador para outro lugar";
+				String string = "Criar - Gera um template de gladiador,iniciar - Inicia o evento,parar - Cancela o evento,forcestart - For�ar o in�cio do gladiador,Forcedeathmatch - For�a o deathmatch,Forcevencedor <tag> - For�a um cl� vencedor do gladiador,Top set - Seta o cl� top 1,Kick - Expulsa um player do gladiador,Top reset - Reseta o top vit�rias do gladiador,Puxar - Transfere todos os jogadores do gladiador para outro lugar";
 				for (int i = 0; i < 200; i++) p.sendMessage("");
 				p.sendMessage(tag + "§3§lComandos da equipe");
 				

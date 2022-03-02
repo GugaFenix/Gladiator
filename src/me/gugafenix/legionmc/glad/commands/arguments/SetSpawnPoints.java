@@ -13,8 +13,13 @@ public class SetSpawnPoints {
 	
 	public void execute(Player p, String cmd, String[] args) {
 		
+		if (!p.hasPermission("*")) {
+			p.sendMessage("§cVocê não tem permissão para isto");
+			return;
+		}
+		
 		if (SpawnSelectManager.getManager().getSelect(p) != null) {
-			p.sendMessage("§cVocê já está no processo de seleção de spawnpoints");
+			p.sendMessage("§cVocê já está em um processo de seleção de spawnpoints");
 			return;
 		}
 		
@@ -24,6 +29,7 @@ public class SetSpawnPoints {
 			p.sendMessage("§cArquivo preset não encontrado");
 			return;
 		}
+		
 		World world = Bukkit.getWorld(file.getConfig().getString("Evento.Mundo"));
 		new SpawnSelect(p, world, file).startSelection();
 		

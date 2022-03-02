@@ -22,6 +22,15 @@ Evento:
   Mundo: 'World'
   TempoParaIniciar: 30
   TempoEntreAvisos: 1
+
+
+Server: 
+  Lobby:
+    mundo: 'World'
+    localização: '0:100:0'
+  
+  
+Camarote: '100:100:100'
   
 DeathMatch:
   NumPlayers: 5

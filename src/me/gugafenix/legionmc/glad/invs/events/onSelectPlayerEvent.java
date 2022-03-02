@@ -1,6 +1,7 @@
 package me.gugafenix.legionmc.glad.invs.events;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import me.HClan.Objects.Jogador;
@@ -19,10 +21,11 @@ import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.player.GladPlayer.SelectionStatus;
+import me.gugafenix.legionmc.glad.tasks.Tasks;
+import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
+import me.gugafenix.legionmc.glad.utils.API;
 
 public class onSelectPlayerEvent implements Listener {
-	
-	public onSelectPlayerEvent() { Main.registerEvent(new onSelectPlayerEvent()); }
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -72,7 +75,7 @@ public class onSelectPlayerEvent implements Listener {
 				
 				// Selecionar o player
 				if (e.getClickedInventory().all(Material.BARRIER).size() == Gladiator.getGladRunning().getMaxClanMembers()) {
-					p.sendMessage(Main.tag + " §cO máximo de players que poderão participar do gladiador foi alcançado");
+					p.sendMessage(Main.tag + " §cO máximo de players que poderão participar do gladiador por clã foi alcançado");
 					p.playSound(p.getLocation(), Sound.VILLAGER_NO, 10, 10);
 					p.closeInventory();
 					return;
@@ -90,14 +93,13 @@ public class onSelectPlayerEvent implements Listener {
 						Main.tag + "§bSerá teleportado para a arena de batalha em §d" + Gladiator.getGladRunning().getTimeToStart());
 				
 				// Configurando o selecionado
-				Main.getPlayerManager().getPlayer(p).getSelectedPlayers().add(selected);
-				GladPlayer gp = null;
-				if (Main.getPlayerManager().getPlayer(selected) == null) gp = new GladPlayer(selected);
+				GladPlayer gp = Main.getPlayerManager().getPlayer(selected);
+				if (gp == null) gp = new GladPlayer(selected);
 				gp.setInGladiator(true);
 				Gladiator.getGladRunning().getPlayers().add(gp);
 				
 				gp.getPlayer().sendMessage(Main.tag
-						+ "§bO evento gladiador será iniciado assim que todos os guerreiros estiverem selecionados, prepare-se para a batalha!");
+						+ "§bO evento gladiador será iniciado assim que todos os guerreiros estiverem selecionados por seus líderes, prepare-se para a batalha!");
 				
 			} else if (item.getType() == Material.BARRIER) {
 				
@@ -119,14 +121,61 @@ public class onSelectPlayerEvent implements Listener {
 				selected.sendMessage(
 						Main.tag + "§cVocê foi removido da lista de players que participarão do gladiador por §7" + p.getName());
 				
-			} else {
+			} else if (item.getType() == Material.EMERALD) {
 				
 				// Pronto
 				p.closeInventory();
-				p.sendMessage("§bJogadors selecionados com sucesso!");
+				p.sendMessage(Main.tag + "§bJogadores selecionados com sucesso!");
 				p.playSound(p.getLocation(), Sound.CAT_MEOW, 10f, 10f);
 				Main.getPlayerManager().getPlayer(p).setSelectionStatus(SelectionStatus.READY);
+				Tasks task = new Tasks(TaskId.START_BATTLE, Gladiator.getGladRunning());
+				
+				if (task.hasPlayerSelecting()) return;
+				else {
+					task.getGlad().getTaskRunning().cancel();
+					task.start();
+				}
+				
+			} else {
+				Inventory inv = e.getInventory();
+				ItemStack it = inv.getItem(randomSlot(inv));
+				Player sl = Bukkit
+						.getPlayer(it.getItemMeta().getDisplayName().replace("§" + it.getItemMeta().getDisplayName().charAt(1), ""));
+				for (int i = 0; i < Gladiator.getGladRunning().getMaxClanMembers(); i++) {
+					
+					// Substituindo o item
+					Item barrier = new Item(Material.BARRIER);
+					barrier.setDisplayName("§c" + name);
+					e.getInventory().setItem(e.getSlot(), barrier.build());
+					
+					// Avisando o player
+					sl.sendMessage(Main.tag + "§aVocê foi escolhido por §7" + p.getName() + " §apara lutar no gladiador");
+					sl.sendMessage(
+							Main.tag + "§bSerá teleportado para a arena de batalha em §d" + Gladiator.getGladRunning().getTimeToStart());
+					
+					// Configurando o selecionado
+					GladPlayer gp = Main.getPlayerManager().getPlayer(sl);
+					if (gp == null) gp = new GladPlayer(sl);
+					gp.setInGladiator(true);
+					Gladiator.getGladRunning().getPlayers().add(gp);
+					
+					gp.getPlayer().sendMessage(Main.tag
+							+ "§bO evento gladiador será iniciado assim que todos os guerreiros estiverem selecionados por seus líderes, prepare-se para a batalha!");
+					
+				}
+				
+				p.sendMessage("§eJogadores aleatórios selecionados!");
+				API.getApi().playSound(p, Sound.ANVIL_BREAK);
+				
 			}
 		}
+		Gladiator.getGladRunning().updateInfoFromAll();
+	}
+	
+	public int randomSlot(Inventory inv) {
+		int random = new Random().nextInt(Gladiator.getGladRunning().getMaxClanMembers());
+		
+		if (inv.getItem(random).getType() != Material.SKULL) { return randomSlot(inv); }
+		return 0;
 	}
 }

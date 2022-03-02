@@ -9,11 +9,6 @@ import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.objects.Gladiator.GladiatorStatus;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class Join {
 	
@@ -71,19 +66,12 @@ public class Join {
 		}
 		
 		// Manda o player pro gladiador
-		gp.getPlayer().sendMessage("§e§l§m----§6§l§m--------" + Main.tag + "§6§l§m --------§e§l§m---");
-		gp.getPlayer().sendMessage("");
-		gp.getPlayer().sendMessage("§3Você se propos a desafiar outros cl�s em uma batalha mortal");
-		gp.getPlayer().sendMessage("");
-		gp.getPlayer().sendMessage("§bscolha aqueles que lutarão ao seu lado por " + gp.getClan().getTagClan());
-		TextComponent t = new TextComponent("§6§l§m-----§8§l[§6§lSelecionar Guerreiros§8§l]§6§l§m-------");
-		t.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/gladiador selecionarguerreiros"));
-		t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-				new ComponentBuilder("§cClique aqui para selecionar os membros do seu clã que participarão do evento").create()));
-		gp.getPlayer().spigot().sendMessage(t);
+		p.sendMessage(Main.tag
+				+ "§bEm alguns segundos, o processo de seleção de guereiros iniciará, prepare-se e prepare seus membros para isto.");
 		gp.setInGladiator(true);
-		glad.getAllClans().add(gp.getClan());
+		if (!glad.getClans().contains(gp.getClan())) glad.getClans().add(gp.getClan());
 		glad.getPlayers().add(gp);
+		glad.updateInfoFromAll();
 		
 //		new GladBoard(glad.getScoreboard().get(0), glad.getScoreboard().subList(1, glad.getScoreboard().size() - 1)).create(p);
 		

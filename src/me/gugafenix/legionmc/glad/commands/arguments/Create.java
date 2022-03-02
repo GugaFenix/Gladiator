@@ -12,6 +12,11 @@ public class Create {
 	public void execute(CommandSender sender, String cmd, String[] args) {
 		Player p = (Player) sender;
 		
+		if (!p.hasPermission("*")) {
+			p.sendMessage("§cVocê não tem permissão para isto");
+			return;
+		}
+		
 		if (args.length > 1) {
 			if (Main.getFileManager().getFile(args[1].replace(".yml", "") + ".yml") == null) {
 				String name = args[1].replace(".yml", "") + ".yml";

@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
 import me.HClan.Objects.Clan;
+import me.gugafenix.legionmc.glad.cabin.Cabin;
 import me.gugafenix.legionmc.glad.file.File;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
@@ -20,12 +21,10 @@ import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
 
 public class Gladiator {
 	private World world, DeathMatchWorld;
-	private String[] lastClans;
-	private List<Clan> allClans;
+	private List<Clan> clans;
 	private WorldBorder border;
 	private File preset;
-	private int playerAmountToDeathMatch, borderReduction, clanAmountToDeathMatch, timeToDecreaseBorder, timeToStart, PlayerAmount,
-			lastTime;
+	private int borderReduction, clanAmountToDeathMatch, timeToDecreaseBorder, timeToStart, PlayerAmount;
 	private List<String> warns, scoreboard;
 	private int timeBelowWarns;
 	private String title, subtitle;
@@ -34,14 +33,19 @@ public class Gladiator {
 	private List<GladPlayer> players;
 	private GladiatorStatus status;
 	private int maxClanMembers, minClanMembers, minClanKDR, minClanMoney;
-	private List<Location> spawnPoints;
+	private List<String> spawnPoints;
+	private long startMilis;
+	private Cabin cabin;
+	private Clan winner;
 	
 	public static enum GladiatorStatus {
-		WARNING, IN_BATTLE, SELECTING, LOCKED;
+		WARNING, IN_BATTLE, SELECTING, LOCKED, DEATH_MATCH;
 	};
 	
+	@SuppressWarnings("unchecked")
 	public Gladiator(File presetFile) {
-		this.allClans = new ArrayList<>();
+		this.winner = null;
+		this.clans = new ArrayList<>();
 		this.players = new ArrayList<>();
 		this.status = GladiatorStatus.WARNING;
 		setHasGladRunning(true);
@@ -54,9 +58,11 @@ public class Gladiator {
 		/*
 		 * Event
 		 */
+		this.startMilis = 0;
 		this.world = Bukkit.getWorld(config.getString("Evento.Mundo"));
 		this.timeToStart = config.getInt("Evento.TempoParaIniciar");
 		this.timeBelowWarns = config.getInt("Evento.TempoEntreAvisos");
+		this.spawnPoints = (List<String>) config.getList("Spawns");
 		/*
 		 * Border
 		 */
@@ -65,13 +71,12 @@ public class Gladiator {
 				new Location(world, config.getInt("Borda.Centro.X"), config.getInt("Borda.Centro.Y"), config.getInt("Borda.Centro.Z")));
 		border.setSize(config.getInt("Borda.Tamanho.Inicio"));
 		border.setDamageAmount(config.getInt("Borda.Dano"));
-		this.timeToDecreaseBorder = config.getInt("Borda.Redução.Tempo");
-		this.borderReduction = config.getInt("Borda.Tamanho.Redução");
+		this.timeToDecreaseBorder = config.getInt("Borda.Reducao.Tempo");
+		this.borderReduction = config.getInt("Borda.Tamanho.Reducao");
 		/*
 		 * DeathMatch
 		 */
-		this.playerAmountToDeathMatch = config.getInt("DeathMatch.QuantidadeDePlayers");
-		this.clanAmountToDeathMatch = config.getInt("DeathMatch.QuantidadeDeClãs");
+		this.clanAmountToDeathMatch = config.getInt("DeathMatch.QuantidadeDeClÃ£s");
 		this.DeathMatchWorld = Bukkit.getWorld(config.getString("DeathMatch.Mundo"));
 		/*
 		 * Messages
@@ -87,6 +92,11 @@ public class Gladiator {
 		this.minClanKDR = config.getInt("Clan.MinKDR");
 		this.minClanMoney = config.getInt("Clan.MinDinheiro");
 		this.minClanMembers = config.getInt("Clan.MinMembros");
+		
+		/*
+		 * Camarote
+		 */
+		this.cabin = new Cabin(this);
 	}
 	
 	private BukkitTask runningTask;
@@ -115,23 +125,11 @@ public class Gladiator {
 	
 	public void setWorld(World world) { this.world = world; }
 	
-	public List<Clan> getAllClans() { return allClans; }
-	
-	public void setAllClans(List<Clan> allClans) { this.allClans = allClans; }
-	
-	public String[] getLastClans() { return lastClans; }
-	
-	public void setLastClans(String[] lastClans) { this.lastClans = lastClans; }
-	
 	public int getPlayerAmount() { return PlayerAmount; }
 	
 	public void setPlayerAmount(int playerAmount) { PlayerAmount = playerAmount; }
 	
 	public List<GladPlayer> getPlayers() { return players; }
-	
-	public int getLastTime() { return lastTime; }
-	
-	public void setLastTime(int lastTime) { this.lastTime = lastTime; }
 	
 	public WorldBorder getBorder() { return border; }
 	
@@ -148,10 +146,6 @@ public class Gladiator {
 	public int getBorderReduction() { return borderReduction; }
 	
 	public void setBorderReduction(int borderReduction) { this.borderReduction = borderReduction; }
-	
-	public int getPlayerAmountToDeathMatch() { return playerAmountToDeathMatch; }
-	
-	public void setPlayerAmountToDeathMatch(int playerAmountToDeathMatch) { this.playerAmountToDeathMatch = playerAmountToDeathMatch; }
 	
 	public int getClanAmountToDeathMatch() { return clanAmountToDeathMatch; }
 	
@@ -201,14 +195,14 @@ public class Gladiator {
 	
 	public void setMinClanMoney(int minClanMoney) { this.minClanMoney = minClanMoney; }
 	
-	public List<Location> getSpawnPoints() { return spawnPoints; }
+	public List<String> getSpawnPoints() { return spawnPoints; }
 	
-	public void setSpawnPoints(List<Location> spawnPoints) { this.spawnPoints = spawnPoints; }
+	public void setSpawnPoints(List<String> spawnPoints) { this.spawnPoints = spawnPoints; }
 	
 	public void cancel() {
 		this.runningTask.cancel();
 		
-		if (!getPlayers().isEmpty() && this.getAllClans().size() != 0) {
+		if (!getPlayers().isEmpty() && this.getClans().size() != 0) {
 			
 			getPlayers().forEach(p -> {
 				getPlayers().remove(p);
@@ -224,4 +218,20 @@ public class Gladiator {
 		gladRunning = null;
 		hasGladRunning = false;
 	}
+	
+	public void updateInfoFromAll() { this.getPlayers().forEach(all -> all.updateInfos()); }
+	
+	public List<Clan> getClans() { return clans; }
+	
+	public long getStartMilis() { return startMilis; }
+	
+	public void setStartMilis(long startMilis) { this.startMilis = startMilis; }
+	
+	public Cabin getCabin() { return cabin; }
+	
+	public void setCabin(Cabin cabin) { this.cabin = cabin; }
+
+	public Clan getWinner() { return winner; }
+
+	public void setWinner(Clan winner) { this.winner = winner; }
 }

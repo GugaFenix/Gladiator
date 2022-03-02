@@ -22,7 +22,7 @@ public class PlaceHolder extends PlaceholderExpansion {
 	@Override
 	public String onPlaceholderRequest(Player p, String params) {
 		Jogador player = new Jogador(p.getName());
-		String string = params.replace("&", "§");
+		String string = params.replace("&", "ï¿½");
 		
 		if (Gladiator.HasGladRunning()) {
 			if (params.toLowerCase().equalsIgnoreCase("tag")) return Main.tag;
@@ -37,15 +37,11 @@ public class PlaceHolder extends PlaceholderExpansion {
 			
 			else if (params.toLowerCase().equalsIgnoreCase("numclans"))
 				
-				return String.valueOf(Gladiator.getGladRunning().getLastClans().length);
+				return String.valueOf(Gladiator.getGladRunning().getClans().size());
 			
 			else if (params.toLowerCase().equalsIgnoreCase("clans")) {
-				
-				String clans = Gladiator.getGladRunning().getLastClans()[0];
-				for (String s : Gladiator.getGladRunning().getLastClans()) {
-					if (s.equalsIgnoreCase(Gladiator.getGladRunning().getLastClans()[0])) continue;
-					clans = clans + ", " + Clan.get(s).getTagClan();
-				}
+				String clans = "";
+				for (Clan clan : Gladiator.getGladRunning().getClans()) clans += clan.getTagClan();
 				return clans;
 				
 			} else if (params.toLowerCase().equalsIgnoreCase("numplayers")) return String.valueOf(Gladiator.getGladRunning().getPlayers());

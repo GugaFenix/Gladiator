@@ -29,7 +29,7 @@ public class Start {
 		
 		// N�o definiu o preset
 		if (args.length == 1) sender.sendMessage(Main.tag
-				+ "§fPara iniciar um evento, � preciso definir qual arquivo de preset ser� usado. \n§6Use /Glad criar para mais informaçõees.");
+				+ "§fPara iniciar um evento, é preciso definir qual arquivo de preset ser� usado. \n§6Use /Glad criar para mais informaçõees.");
 		else {
 			
 			File ioFile = new File(Main.getMain().getDataFolder().getAbsolutePath() + "/Presets/" + args[1].replace(".yml", "") + ".yml");

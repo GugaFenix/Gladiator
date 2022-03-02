@@ -2,4 +2,4 @@ name: Gladiator
 main: me.gugafenix.legionmc.glad.main.Main
 version: 0.1-SNAPSHOT
 author: GugaFenix
-depend: [H_clan, PlaceholderAPI]
+depend: [H_Clan, PlaceholderAPI]

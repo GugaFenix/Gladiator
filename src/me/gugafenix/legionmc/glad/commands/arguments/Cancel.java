@@ -12,14 +12,14 @@ public class Cancel {
 	
 	public void execute(Player p, String cmd, String[] args) {
 		
-		if (!Gladiator.hasGladRunning()) {
-			p.sendMessage(Main.tag + "§cNenhum comando encontrado");
-			API.getApi().playSound(p, Sound.VILLAGER_NO);
+		if (!p.hasPermission("*")) {
+			p.sendMessage("§cVocê não tem permissão para isto");
 			return;
 		}
 		
-		if (!p.isOp()) {
-			p.sendMessage(Main.tag + "§cApenas operadores podem cancelar o gladiador");
+		if (!Gladiator.hasGladRunning()) {
+			p.sendMessage(Main.tag + "§cNenhum comando encontrado");
+			API.getApi().playSound(p, Sound.VILLAGER_NO);
 			return;
 		}
 		

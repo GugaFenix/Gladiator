@@ -12,23 +12,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.spawnselection.SpawnSelect;
 import me.gugafenix.legionmc.glad.spawnselection.SpawnSelectManager;
 import me.gugafenix.legionmc.glad.utils.API;
-import net.minecraft.server.v1_8_R3.EntityLightning;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityWeather;
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 
 public class PlayerPlaceBlock implements Listener {
-	
-	public PlayerPlaceBlock() { Main.registerEvent(new PlayerPlaceBlock()); }
 	
 	@EventHandler
 	void onPlayerPlaceBlockEvent(BlockPlaceEvent e) {
 		Player p = e.getPlayer();
 		Block block = e.getBlockPlaced();
 		
-		if (block == null || block.getType() != Material.ENDER_PORTAL) return;
+		if (block == null || block.getType() != Material.ENDER_PORTAL_FRAME) return;
 		
 		boolean hasMeta = p.getItemInHand().hasItemMeta();
 		boolean hasName = p.getItemInHand().getItemMeta().hasDisplayName();
@@ -45,10 +42,15 @@ public class PlayerPlaceBlock implements Listener {
 			locs.add(block.getLocation());
 			API.getApi().playSound(p, Sound.LEVEL_UP);
 			
-			CraftPlayer cp = (CraftPlayer) p;
 			
-			cp.getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityWeather(new EntityLightning(cp.getHandle().getWorld(),
-					block.getLocation().getX(), block.getLocation().getY(), cp.getLocation().getZ(), false, false)));
+			Location loc = block.getLocation();
+			
+			for (int i = loc.getBlockY(); i < loc.getBlockY() + 5; i++) {
+				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.LAVA, true, (float) (loc.getX() + 500),
+						(float) (i), (float) (loc.getZ() + 500), (float) 0, (float) 0, (float) 0, (float) 0, 1);
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+			}
+			
 		}
 		
 	}

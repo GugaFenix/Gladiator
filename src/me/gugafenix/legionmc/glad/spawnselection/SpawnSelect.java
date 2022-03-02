@@ -7,12 +7,15 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import me.HClan.Utils.Item;
 import me.gugafenix.legionmc.glad.file.File;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.utils.API;
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 
 public class SpawnSelect {
 	private Player p;
@@ -26,6 +29,7 @@ public class SpawnSelect {
 		this.world = world;
 		this.file = file;
 		this.locations = new ArrayList<>();
+		SpawnSelectManager.getManager().getSelects().add(this);
 	}
 	
 	public void startSelection() {
@@ -36,28 +40,36 @@ public class SpawnSelect {
 		
 		p.sendMessage(Main.tag
 				+ "§bColoque os portais do end onde quer adicionar um spawnpoint. E caso queira remove-lo, basta quebrar o bloco.");
-		p.sendMessage("§aPara finalizar a seleção e salvar as localizacões digite §3§lPRONTO §7ano chat."
-				+ " \n§aPara cancelar o processo digite §c§lCANCELAR §ano chat");
+		p.sendMessage("§aPara finalizar a seleção e salvar as localizacões digite §3§lPRONTO"
+				+ " \n§aPara cancelar o processo digite §c§lCANCELAR");
 		API.getApi().playSound(p, Sound.LEVEL_UP);
 		
 		p.getInventory().clear();
 		
-		Item portal = new Item(Material.ENDER_PORTAL);
+		Item portal = new Item(Material.ENDER_PORTAL_FRAME);
 		portal.setDisplayName("§aAdicionar spawn point");
 		portal.setGlow();
 		portal.setLore("", "§bColoque este bloco onde deseja adicionar um spawn point do gladiador");
 		
-		p.getInventory().setItem(5, portal.build());
+		p.getInventory().setItem(4, portal.build());
 		
 	}
 	
 	public void cancelSelection() {
 		
-		locations.clear();
 		p.sendMessage(Main.tag + "§cSeleção de spawn points cancelado");
 		API.getApi().playSound(p, Sound.LEVEL_UP);
 		p.teleport(fromLocation);
-		
+		SpawnSelectManager.getManager().getSelects().remove(this);
+		for (int i = 0; i < locations.size(); i++) {
+			Location loc = locations.get(i);
+			loc.getBlock().setType(Material.AIR);
+			PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.EXPLOSION_NORMAL, true,
+					(float) (loc.getX() + 500), (float) (loc.getY()), (float) (loc.getZ() + 500), (float) 0, (float) 0, (float) 0,
+					(float) 0, 20);
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+		}
+		locations.clear();
 	}
 	
 	public void finishSelection() {
@@ -66,24 +78,33 @@ public class SpawnSelect {
 		p.getInventory().clear();
 		API.getApi().playSound(p, Sound.LEVEL_UP);
 		p.teleport(fromLocation);
+		SpawnSelectManager.getManager().getSelects().remove(this);
 	}
 	
 	private void saveLocations() {
 		List<String> stringlist = file.getConfig().getStringList("Spawns");
 		stringlist.clear();
-		for (Location loc : locations) stringlist.add(serialize(loc));
+		for (int i = 0; i < locations.size(); i++) {
+			Location loc = locations.get(i);
+			loc.getBlock().setType(Material.AIR);
+			PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.EXPLOSION_NORMAL, true,
+					(float) (loc.getX() + 500), (float) (loc.getY()), (float) (loc.getZ() + 500), (float) 0, (float) 0, (float) 0,
+					(float) 0, 20);
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+		}
+		file.getConfig().set("Spawns", stringlist);
 		file.save();
 		locations.clear();
 	}
 	
-	private String serialize(Location loc) {
-		
-		double x = loc.getBlockX();
-		double y = loc.getBlockY();
-		double z = loc.getBlockZ();
-		
-		return x + ":" + y + ":" + z;
-	}
+//	private String serialize(Location loc) {
+//		
+//		double x = loc.getBlockX();
+//		double y = loc.getBlockY();
+//		double z = loc.getBlockZ();
+//		
+//		return x + ":" + y + ":" + z;
+//	}
 	
 	public Player getPlayer() { return p; }
 	

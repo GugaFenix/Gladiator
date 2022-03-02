@@ -10,9 +10,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.gugafenix.legionmc.glad.commands.Commander;
+import me.gugafenix.legionmc.glad.events.PlayerRemoveEvent;
 import me.gugafenix.legionmc.glad.file.FileManager;
+import me.gugafenix.legionmc.glad.invs.events.onSelectPlayerEvent;
 import me.gugafenix.legionmc.glad.player.GladPlayerManager;
 import me.gugafenix.legionmc.glad.spawnselection.SpawnSelectManager;
+import me.gugafenix.legionmc.glad.spawnselection.events.BugOnSelectEvent;
+import me.gugafenix.legionmc.glad.spawnselection.events.PlayerBreakBlock;
+import me.gugafenix.legionmc.glad.spawnselection.events.PlayerChatEvent;
+import me.gugafenix.legionmc.glad.spawnselection.events.PlayerPlaceBlock;
 import me.gugafenix.legionmc.glad.utils.API;
 import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
@@ -29,7 +35,16 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		main = this;
+		
 		listeners = new ArrayList<>();
+		listeners.add(new PlayerRemoveEvent());
+		listeners.add(new PlayerBreakBlock());
+		listeners.add(new PlayerChatEvent());
+		listeners.add(new PlayerPlaceBlock());
+		listeners.add(new onSelectPlayerEvent());
+		listeners.add(new BugOnSelectEvent());
+		registerEvents();
+		
 		api = new API();
 		new PlaceHolder().register();
 		fileManager = new FileManager();
@@ -38,7 +53,6 @@ public class Main extends JavaPlugin {
 		spawnsManager = new SpawnSelectManager();
 		saveDefaultConfig();
 		registerMainCommand();
-		registerEvents();
 	}
 	
 	private void registerMainCommand() {
@@ -54,9 +68,7 @@ public class Main extends JavaPlugin {
 		for (String msg : strings) { Bukkit.getConsoleSender().sendMessage(msg); }
 	}
 	
-	public static void registerEvent(Listener listener) { listeners.add(listener); }
-	
-	public void registerEvents() { listeners.forEach(l -> Bukkit.getPluginManager().registerEvents(l, this)); }
+	public void registerEvents() { listeners.forEach(l -> Bukkit.getPluginManager().registerEvents(l, main)); }
 	
 	public static GladPlayerManager getPlayerManager() { return playerManager; }
 	

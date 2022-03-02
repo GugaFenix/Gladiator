@@ -7,12 +7,19 @@ import org.bukkit.entity.Player;
 
 import me.gugafenix.legionmc.glad.commands.arguments.Cancel;
 import me.gugafenix.legionmc.glad.commands.arguments.Create;
+import me.gugafenix.legionmc.glad.commands.arguments.ForceDeathMatch;
+import me.gugafenix.legionmc.glad.commands.arguments.ForceStart;
+import me.gugafenix.legionmc.glad.commands.arguments.ForceWinner;
 import me.gugafenix.legionmc.glad.commands.arguments.Help;
+import me.gugafenix.legionmc.glad.commands.arguments.Info;
 import me.gugafenix.legionmc.glad.commands.arguments.Join;
+import me.gugafenix.legionmc.glad.commands.arguments.Kick;
 import me.gugafenix.legionmc.glad.commands.arguments.Leave;
-import me.gugafenix.legionmc.glad.commands.arguments.SelectWarriors;
 import me.gugafenix.legionmc.glad.commands.arguments.SetSpawnPoints;
 import me.gugafenix.legionmc.glad.commands.arguments.Start;
+import me.gugafenix.legionmc.glad.commands.arguments.Top;
+import me.gugafenix.legionmc.glad.commands.arguments.Warp;
+import me.gugafenix.legionmc.glad.commands.arguments.Watch;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 
@@ -38,14 +45,6 @@ public class Commander extends Command {
 			case "create":
 				new Create().execute(sender, cmd, args);
 				break;
-			case "selecionarguerreiros":
-				if (!Gladiator.HasGladRunning()) {
-					p.sendMessage(Main.tag + "§cNão há nenhum gladiador ocorrendo.");
-					p.playSound(p.getLocation(), Sound.VILLAGER_NO, 10, 10);
-					return false;
-				}
-				new SelectWarriors().execute(sender, cmd, args);
-				break;
 			case "join":
 				if (!Gladiator.HasGladRunning()) {
 					p.sendMessage(Main.tag + " §cNão há nenhum gladiador ocorrendo.");
@@ -53,19 +52,45 @@ public class Commander extends Command {
 					return false;
 				}
 				
-				if (new Join().execute(sender, cmd, args)) {
-					p.playSound(p.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
-				} else p.playSound(p.getLocation(), Sound.VILLAGER_NO, 10, 10);
+				if (new Join().execute(sender, cmd, args)) p.playSound(p.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+				else p.playSound(p.getLocation(), Sound.VILLAGER_NO, 10, 10);
 				break;
 			case "cancel":
 				new Cancel().execute(p, cmd, args);
 				break;
+			case "top":
+				new Top().execute(p, cmd, args);
+				break;
+			case "forcestart":
+				new ForceStart().execute(p, cmd, args);
+				break;
+			case "forcedeathmatch":
+				new ForceDeathMatch().execute(p, cmd, args);
+				break;
 			case "leave":
 				new Leave().execute(p, cmd, args);
 				break;
+			case "kick":
+				new Kick().execute(p, cmd, args);
+				break;
+			case "watch":
+				new Watch().execute(p, cmd, args);
+				break;
+			case "warp":
+				new Warp().execute(p, cmd, args);
+				break;
 			case "setspawnpoints":
-				if (args.length < 2) p.sendMessage("§cUse /glad setspawnpoints <preset>");
+				if (args.length != 2) {
+					p.sendMessage("§cUse /glad setspawnpoints <preset>");
+					return false;
+				}
 				new SetSpawnPoints().execute(p, cmd, args);
+				break;
+			case "info":
+				new Info().execute(p, cmd, args);
+				break;
+			case "forcewinner":
+				new ForceWinner().execute(p, cmd, args);
 				break;
 			default:
 				p.sendMessage(Main.tag + "§cComando não encontrado");
@@ -87,19 +112,17 @@ public class Commander extends Command {
 		else if (arg.equalsIgnoreCase("iniciar") || arg.equalsIgnoreCase("come�ar")) return "start";
 		else if (arg.equalsIgnoreCase("criar") || arg.equalsIgnoreCase("gerar")) return "create";
 		else if (arg.equalsIgnoreCase("cancelar") || arg.equalsIgnoreCase("parar")) return "cancel";
-		else if (arg.equalsIgnoreCase("forcarinicio") || arg.equalsIgnoreCase("forcarstart")) return "forcestart";
-		else if (arg.equalsIgnoreCase("forcardeathmatch")) arg = "forcedeathmatch";
-		else if (arg.equalsIgnoreCase("for�arvencedor") || arg.equalsIgnoreCase("for�arwinner")) return "forcewinner";
-		else if (arg.equalsIgnoreCase("top")) arg = "cancel";
+		else if (arg.equalsIgnoreCase("forçarinicio") || arg.equalsIgnoreCase("forçarstart")) return "forcestart";
+		else if (arg.equalsIgnoreCase("forçardeathmatch") || arg.equalsIgnoreCase("forcedm")) return "forcedeathmatch";
+		else if (arg.equalsIgnoreCase("forçarvencedor") || arg.equalsIgnoreCase("forçarwinner")) return "forcewinner";
+		else if (arg.equalsIgnoreCase("top")) return "top";
 		else if (arg.equalsIgnoreCase("puxar") || arg.equalsIgnoreCase("teleport")) return "warp";
 		else if (arg.equalsIgnoreCase("entrar") || arg.equalsIgnoreCase("participar")) return "join";
 		else if (arg.equalsIgnoreCase("sair") || arg.equalsIgnoreCase("quitar")) return "leave";
 		else if (arg.equalsIgnoreCase("assistir") || arg.equalsIgnoreCase("camarote")) return "watch";
+		else if (arg.equalsIgnoreCase("kickar") || arg.equalsIgnoreCase("remover")) return "kick";
 		else if (arg.equalsIgnoreCase("info")) return "log";
-		else if (arg.equalsIgnoreCase("setspawns")) return "setspawnpoints";
 		else return arg;
-		
-		return null;
 	}
 	
 }
