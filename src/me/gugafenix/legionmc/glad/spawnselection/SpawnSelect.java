@@ -7,15 +7,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import me.HClan.Utils.Item;
 import me.gugafenix.legionmc.glad.file.File;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.utils.API;
-import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 
 public class SpawnSelect {
 	private Player p;
@@ -61,14 +58,7 @@ public class SpawnSelect {
 		API.getApi().playSound(p, Sound.LEVEL_UP);
 		p.teleport(fromLocation);
 		SpawnSelectManager.getManager().getSelects().remove(this);
-		for (int i = 0; i < locations.size(); i++) {
-			Location loc = locations.get(i);
-			loc.getBlock().setType(Material.AIR);
-			PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.EXPLOSION_NORMAL, true,
-					(float) (loc.getX() + 500), (float) (loc.getY()), (float) (loc.getZ() + 500), (float) 0, (float) 0, (float) 0,
-					(float) 0, 20);
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
-		}
+		for (Location loc : locations) loc.getBlock().setType(Material.AIR);
 		locations.clear();
 	}
 	
@@ -82,29 +72,25 @@ public class SpawnSelect {
 	}
 	
 	private void saveLocations() {
-		List<String> stringlist = file.getConfig().getStringList("Spawns");
+		List<String> stringlist = new ArrayList<>();
 		stringlist.clear();
-		for (int i = 0; i < locations.size(); i++) {
-			Location loc = locations.get(i);
+		for (Location loc : locations) {
 			loc.getBlock().setType(Material.AIR);
-			PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.EXPLOSION_NORMAL, true,
-					(float) (loc.getX() + 500), (float) (loc.getY()), (float) (loc.getZ() + 500), (float) 0, (float) 0, (float) 0,
-					(float) 0, 20);
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+			stringlist.add(serialize(loc));
 		}
 		file.getConfig().set("Spawns", stringlist);
 		file.save();
 		locations.clear();
 	}
 	
-//	private String serialize(Location loc) {
-//		
-//		double x = loc.getBlockX();
-//		double y = loc.getBlockY();
-//		double z = loc.getBlockZ();
-//		
-//		return x + ":" + y + ":" + z;
-//	}
+	private String serialize(Location loc) {
+		
+		double x = loc.getBlockX();
+		double y = loc.getBlockY();
+		double z = loc.getBlockZ();
+		
+		return x + ":" + y + ":" + z;
+	}
 	
 	public Player getPlayer() { return p; }
 	

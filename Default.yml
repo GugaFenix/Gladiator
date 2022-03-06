@@ -14,6 +14,11 @@
 # %glad_kills% N�mero de kills do player
 # %glad_LasClanPlayers% Quantidade de players restantes do pr�prio cl�
 
+# Este preset será instanciado para iniciar um gladiador automáticamente?
+# OBS: Apenas um preset pode ser definido como true
+AutoStart: false
+EspaçoEntreGladiadores: '7d'
+
 # Configura��es do evento
 # Mundo -> Mundo em que o evento ocorrer�
 # TempoParaIniciar -> Tempo desde o primeiro aviso at� o in�cio do evento
@@ -23,13 +28,6 @@ Evento:
   TempoParaIniciar: 30
   TempoEntreAvisos: 1
 
-
-Server: 
-  Lobby:
-    mundo: 'World'
-    localização: '0:100:0'
-  
-  
 Camarote: '100:100:100'
   
 DeathMatch:
@@ -78,7 +76,7 @@ Subtitulo: '&7Evento gladiador iniciando em &f%glad_timetostart% &7minutos'
 #______________________________________________
 Scoreboard:
   -  '&f&lLegionMC | %glad_tag%'
-  -  '&bSeu cl�: %glad_clan%'
+  -  '&bSeu clã: %glad_clan%'
   -  ''
   -  '&3Suas kills: &7%glad_kills%'
   -  '&3Membros do cl� restantes:'

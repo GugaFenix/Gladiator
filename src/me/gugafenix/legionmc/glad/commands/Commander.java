@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import me.gugafenix.legionmc.glad.commands.arguments.Cancel;
 import me.gugafenix.legionmc.glad.commands.arguments.Create;
 import me.gugafenix.legionmc.glad.commands.arguments.ForceDeathMatch;
+import me.gugafenix.legionmc.glad.commands.arguments.ForceSelection;
 import me.gugafenix.legionmc.glad.commands.arguments.ForceStart;
 import me.gugafenix.legionmc.glad.commands.arguments.ForceWinner;
 import me.gugafenix.legionmc.glad.commands.arguments.Help;
@@ -15,6 +16,7 @@ import me.gugafenix.legionmc.glad.commands.arguments.Info;
 import me.gugafenix.legionmc.glad.commands.arguments.Join;
 import me.gugafenix.legionmc.glad.commands.arguments.Kick;
 import me.gugafenix.legionmc.glad.commands.arguments.Leave;
+import me.gugafenix.legionmc.glad.commands.arguments.Reload;
 import me.gugafenix.legionmc.glad.commands.arguments.SetSpawnPoints;
 import me.gugafenix.legionmc.glad.commands.arguments.Start;
 import me.gugafenix.legionmc.glad.commands.arguments.Top;
@@ -42,6 +44,9 @@ public class Commander extends Command {
 			case "start":
 				new Start().execute(sender, cmd, args);
 				break;
+			case "reload":
+				new Reload().execute(sender, cmd, args);
+				break;
 			case "create":
 				new Create().execute(sender, cmd, args);
 				break;
@@ -63,6 +68,9 @@ public class Commander extends Command {
 				break;
 			case "forcestart":
 				new ForceStart().execute(p, cmd, args);
+				break;
+			case "forceselection":
+				new ForceSelection().execute(p, cmd, args);
 				break;
 			case "forcedeathmatch":
 				new ForceDeathMatch().execute(p, cmd, args);
@@ -86,8 +94,8 @@ public class Commander extends Command {
 				}
 				new SetSpawnPoints().execute(p, cmd, args);
 				break;
-			case "info":
-				new Info().execute(p, cmd, args);
+			case "log":
+				new Info().execute(sender, cmd, args);
 				break;
 			case "forcewinner":
 				new ForceWinner().execute(p, cmd, args);
@@ -109,7 +117,7 @@ public class Commander extends Command {
 		String arg = string;
 		
 		if (arg.equalsIgnoreCase("ajuda") || arg.equalsIgnoreCase("comandos")) return "help";
-		else if (arg.equalsIgnoreCase("iniciar") || arg.equalsIgnoreCase("come�ar")) return "start";
+		else if (arg.equalsIgnoreCase("iniciar") || arg.equalsIgnoreCase("começar")) return "start";
 		else if (arg.equalsIgnoreCase("criar") || arg.equalsIgnoreCase("gerar")) return "create";
 		else if (arg.equalsIgnoreCase("cancelar") || arg.equalsIgnoreCase("parar")) return "cancel";
 		else if (arg.equalsIgnoreCase("forçarinicio") || arg.equalsIgnoreCase("forçarstart")) return "forcestart";
@@ -122,7 +130,7 @@ public class Commander extends Command {
 		else if (arg.equalsIgnoreCase("assistir") || arg.equalsIgnoreCase("camarote")) return "watch";
 		else if (arg.equalsIgnoreCase("kickar") || arg.equalsIgnoreCase("remover")) return "kick";
 		else if (arg.equalsIgnoreCase("info")) return "log";
-		else return arg;
+		else return arg.toLowerCase();
 	}
 	
 }

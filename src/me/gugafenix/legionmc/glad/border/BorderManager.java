@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import me.gugafenix.legionmc.glad.objects.Gladiator;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldBorder;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldBorder.EnumWorldBorderAction;
 import net.minecraft.server.v1_8_R3.WorldBorder;
@@ -14,22 +15,25 @@ import net.minecraft.server.v1_8_R3.WorldBorder;
 public class BorderManager {
 	private List<Player> players;
 	private int startSize, lessSize;
-	private int lessTime, center;
+	private int lessTime;
+	private Location center;
 	private World world;
 	private WorldBorder border;
+	private WorldBorder lastBorder;
 	
 	public BorderManager(World world, List<Player> players) {
 		this.players = players;
 		this.world = world;
-		this.border = (WorldBorder) world.getWorldBorder();
+		this.border = new WorldBorder();
+		this.lastBorder = null;
 	}
 	
-	public void update(Location center, int size, int warnDistance) {
+	public void update(int less) {
 		remove();
 		border = new WorldBorder();
 		border.setCenter(center.getX(), center.getZ());
-		border.setSize(size);
-		border.setWarningDistance(warnDistance);
+		border.setSize(lastBorder.getSize() - less);
+		border.setWarningDistance(3);
 		
 		for (Player p : players) {
 			CraftPlayer cp = ((CraftPlayer) p);
@@ -48,6 +52,7 @@ public class BorderManager {
 	
 	private void remove() {
 		if (border == null) return;
+		this.lastBorder = border;
 		this.border = null;
 		PacketPlayOutWorldBorder pktinitialize = new PacketPlayOutWorldBorder((WorldBorder) border, EnumWorldBorderAction.INITIALIZE);
 		for (Player p : players) { ((CraftPlayer) p).getHandle().playerConnection.sendPacket(pktinitialize); }
@@ -69,9 +74,9 @@ public class BorderManager {
 
 	public void setLessTime(int lessTime) { this.lessTime = lessTime; }
 
-	public int getCenter() { return center; }
+	public Location getCenter() { return center; }
 
-	public void setCenter(int center) { this.center = center; }
+	public void setCenter(Location location) { this.center = location; }
 
 	public World getWorld() { return world; }
 

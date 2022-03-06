@@ -45,7 +45,7 @@ public class SelectMembersMenu {
 			skull.setDisplayName("§6Selecionar " + all.getName());
 			
 			int slot = members.indexOf(all);
-			if (slot > 9 * 6 - 8) slot++;
+			if (slot > 9 * 6 - 9) slot++;
 			
 			inv.setItem(members.indexOf(all), skull.build());
 		});
@@ -55,7 +55,7 @@ public class SelectMembersMenu {
 			Item item = new Item(Material.STAINED_GLASS_PANE, 10);
 			item.setGlow();
 			item.setDisplayName("§b</>");
-			for (int i = 9 * 6 - 8; i < 9 * 6 - 1; i++) inv.setItem(i, item.build());
+			for (int i = 9 * 6 - 9; i < 9 * 6 - 1; i++) inv.setItem(i, item.build());
 			
 		}
 		
@@ -70,23 +70,23 @@ public class SelectMembersMenu {
 			Item item = new Item(Material.ARROW);
 			item.setDisplayName("§bPágina Anterior");
 			item.setAmount(page + 1);
-			inv.setItem((6 * 9) - 8, item.build());
+			inv.setItem((6 * 9) - 9, item.build());
 		}
 		
 		{
-			Item ready = new Item(Material.EMERALD);
+			Item ready = new Item(Material.BOOKSHELF);
 			ready.setDisplayName("§APronto");
-			ready.setLore("", "§bPressione este item se já estiver esolhido todos os guerreiros");
+			ready.setLore("", "§bPressione este item se já estiver selecionado todos os guerreiros");
 			ready.setAmount(page + 1);
 			inv.setItem((6 * 9) - 2, ready.build());
 		}
 		
 		{
-			Item random = new Item(Material.EMERALD);
+			Item random = new Item(Material.BEACON);
 			random.setDisplayName("§aAleatório");
 			random.setLore("", "§aEscolher guerreiros aleatórios");
 			random.setAmount(page + 1);
-			inv.setItem((6 * 9) - 7, random.build());
+			inv.setItem((6 * 9) - 8, random.build());
 		}
 		
 		p.openInventory(inv);
@@ -97,7 +97,7 @@ public class SelectMembersMenu {
 	public static HashMap<Player, Integer> getMap() { return map; }
 	
 	public Inventory createInventory() {
-		setInventory(Bukkit.createInventory(null, 9 * 6, "§0Selecionar Guerreiros"));
+		setInventory(Bukkit.createInventory(null, 9 * 6, "§0§l§k!!! §6§lSelecionar Guerreiros §0§l§k!!!"));
 		return this.inventory;
 	}
 	

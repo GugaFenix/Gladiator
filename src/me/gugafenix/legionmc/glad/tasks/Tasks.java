@@ -1,5 +1,7 @@
 package me.gugafenix.legionmc.glad.tasks;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -12,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import me.HClan.Objects.Jogador;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.gugafenix.legionmc.glad.border.BorderManager;
 import me.gugafenix.legionmc.glad.invs.SelectMembersMenu;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
@@ -22,11 +25,11 @@ import me.gugafenix.legionmc.glad.utils.API;
 
 public class Tasks {
 	private Gladiator glad;
-	private BukkitTask sendWarns, checkSelection, startBattle, deathMatch;
+	private static BukkitTask sendWarns, checkSelection, startBattle, deathMatch, borderDecrease;
 	private TaskId id;
 	
 	public enum TaskId {
-		SEND_WARNS, CHECK_SELECTION, START_BATTLE, DEATHMATCH;
+		SEND_WARNS, CHECK_SELECTION, START_BATTLE, DEATHMATCH, BORDER;
 	}
 	
 	public Tasks(TaskId id, Gladiator glad) {
@@ -51,6 +54,9 @@ public class Tasks {
 		case DEATHMATCH:
 			task = runDeathMatchTask();
 			break;
+		case BORDER:
+			task = runBorderUpdateTask();
+			break;
 		default:
 			break;
 		}
@@ -64,7 +70,7 @@ public class Tasks {
 			
 			@Override
 			public void run() {
-				
+				glad.setRunningTask(sendWarns);
 				// Check se o tempo de aviso acabou
 				if (glad.getTimeToStart() > 0) {
 					glad.setTimeToStart(glad.getTimeToStart() - (1));
@@ -81,7 +87,7 @@ public class Tasks {
 					}
 					
 					glad.setStatus(GladiatorStatus.SELECTING);
-					runSelectionCheckTask();
+					glad.setRunningTask(runSelectionCheckTask());
 					this.cancel();
 					return;
 				}
@@ -95,12 +101,10 @@ public class Tasks {
 					
 					// Check se o player j§ est§ no gladiador
 					if (Main.getPlayerManager().getPlayer(p) != null) continue;
-					
-					// Clear chat
-					for (int j = 0; j < 200; j++) p.sendMessage("");
-					
+					p.sendMessage("");
 					if (i == 1) {
 						sendWarn(p);
+						p.sendMessage("");
 						i = glad.getTimeBelowWarns();
 					} else {
 						i--;
@@ -123,12 +127,12 @@ public class Tasks {
 					
 					for (GladPlayer gp : glad.getPlayers())
 						API.getApi().sendTitle("§bDEATH MATCH", "§biniciando em §3" + i, gp.getPlayer());
-					
 					i--;
 				} else {
 					glad.getWorld().setPVP(true);
 					for (GladPlayer gp : glad.getPlayers())
 						API.getApi().sendTitle("§bO death match iniciou ", "§3§lLUTE!" + i, gp.getPlayer());
+					
 					this.cancel();
 					
 				}
@@ -185,7 +189,7 @@ public class Tasks {
 							p.getPlayer().sendMessage("§e§l§m----§6§l§m--------" + Main.tag + "§6§l§m --------§e§l§m---");
 							p.getPlayer().sendMessage("§3Voc§ se propos a desafiar todos à uma batalha mortal");
 							p.getPlayer().sendMessage("§bAgora, escolha aqueles que lutarão ao seu lado por " + p.getClan().getTagClan());
-							p.getPlayer().sendMessage("§6§l§m---------------§8§l[§6§lSelecine seus Guerreiros§8§l]§6§l§m-----------------");
+							p.getPlayer().sendMessage("§6§l§m----------------------------------------------------------");
 							
 							// Reset timer
 							i = 0;
@@ -201,8 +205,8 @@ public class Tasks {
 	
 	public BukkitTask runStartBattleTask() {
 		glad.setStatus(GladiatorStatus.IN_BATTLE);
+		glad.setTimeToStart(10);
 		return startBattle = new BukkitRunnable() {
-			
 			@Override
 			public void run() {
 				
@@ -225,14 +229,33 @@ public class Tasks {
 						p.getPlayer().teleport(loc);
 						
 						Bukkit.getScheduler().runTask(Main.getMain(), () -> p.getPlayer().setGameMode(GameMode.SURVIVAL));
+						glad.setRunningTask(runBorderUpdateTask());
 					}
 					
 					glad.getWorld().setPVP(true);
 					glad.setStartMilis(System.currentTimeMillis());
+					glad.setRunningTask(runBorderUpdateTask());
 					this.cancel();
 				}
 			}
 		}.runTaskTimerAsynchronously(Main.getMain(), 0, 20);
+	}
+	
+	public BukkitTask runBorderUpdateTask() {
+		List<Player> players = new ArrayList<>();
+		for (GladPlayer gps : glad.getPlayers()) players.add(gps.getPlayer());
+		BorderManager bm = glad.getBorder();
+		return new BukkitRunnable() {
+			@Override
+			public void run() {
+				List<Player> players = new ArrayList<>();
+				for (GladPlayer gps : glad.getPlayers()) players.add(gps.getPlayer());
+				bm.setPlayers(players);
+				bm.update(glad.getBorderReduction());
+				bm.getPlayers().forEach(p -> p
+						.sendMessage(Main.tag + "§aA borda do gladiador foi diminuída em §f" + glad.getBorderReduction() + " §ablocos"));
+			}
+		}.runTaskTimerAsynchronously(Main.getMain(), glad.getTimeToDecreaseBorder(), glad.getTimeToDecreaseBorder());
 	}
 	
 	public Location unserialize(String string) {
@@ -250,16 +273,6 @@ public class Tasks {
 	
 	public BukkitTask getSendWarns() { return sendWarns; }
 	
-	public void setSendWarns(BukkitTask sendWarns) { this.sendWarns = sendWarns; }
-	
-	public BukkitTask getCheckSelection() { return checkSelection; }
-	
-	public void setCheckSelection(BukkitTask checkSelection) { this.checkSelection = checkSelection; }
-	
-	public BukkitTask getStartBattle() { return startBattle; }
-	
-	public void setStartBattle(BukkitTask startBattle) { this.startBattle = startBattle; }
-	
 	public TaskId getId() { return id; }
 	
 	public void setId(TaskId id) { this.id = id; }
@@ -274,11 +287,25 @@ public class Tasks {
 		return false;
 	}
 	
-	public BukkitTask getDeathMatch() { return deathMatch; }
+	public static BukkitTask getCheckSelection() { return checkSelection; }
 	
-	public BukkitTask setDeathMatch(BukkitTask deathMatch) {
-		this.deathMatch = deathMatch;
+	public static void setCheckSelection(BukkitTask checkSelection) { Tasks.checkSelection = checkSelection; }
+	
+	public static BukkitTask getStartBattle() { return startBattle; }
+	
+	public static void setStartBattle(BukkitTask startBattle) { Tasks.startBattle = startBattle; }
+	
+	public static void setSendWarns(BukkitTask sendWarns) { Tasks.sendWarns = sendWarns; }
+	
+	public static BukkitTask getDeathMatch() { return deathMatch; }
+	
+	public static BukkitTask setDeathMatch(BukkitTask deathMatch) {
+		Tasks.deathMatch = deathMatch;
 		return deathMatch;
 	}
+	
+	public static BukkitTask getBorderDecrease() { return borderDecrease; }
+	
+	public static void setBorderDecrease(BukkitTask borderDecrease) { Tasks.borderDecrease = borderDecrease; }
 	
 }

@@ -35,11 +35,7 @@ public class onSelectPlayerEvent implements Listener {
 		
 		// Verificações para ignorar
 		if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
-		if (!e.getInventory().getTitle().equalsIgnoreCase("§0Selecionar Guerreiros")) return;
-		if (e.getCurrentItem().getType() == Material.STAINED_GLASS) {
-			e.setCancelled(true);
-			return;
-		}
+		if (!e.getInventory().getTitle().equalsIgnoreCase("§0§l§k!!! §6§lSelecionar Guerreiros §0§l§k!!!")) return;
 		
 		// Evento cancelado
 		e.setCancelled(true);
@@ -121,7 +117,7 @@ public class onSelectPlayerEvent implements Listener {
 				selected.sendMessage(
 						Main.tag + "§cVocê foi removido da lista de players que participarão do gladiador por §7" + p.getName());
 				
-			} else if (item.getType() == Material.EMERALD) {
+			} else if (item.getType() == Material.BOOKSHELF) {
 				
 				// Pronto
 				p.closeInventory();
@@ -129,12 +125,8 @@ public class onSelectPlayerEvent implements Listener {
 				p.playSound(p.getLocation(), Sound.CAT_MEOW, 10f, 10f);
 				Main.getPlayerManager().getPlayer(p).setSelectionStatus(SelectionStatus.READY);
 				Tasks task = new Tasks(TaskId.START_BATTLE, Gladiator.getGladRunning());
-				
 				if (task.hasPlayerSelecting()) return;
-				else {
-					task.getGlad().getTaskRunning().cancel();
-					task.start();
-				}
+				else Gladiator.getGladRunning().runTask(TaskId.START_BATTLE);
 				
 			} else {
 				Inventory inv = e.getInventory();

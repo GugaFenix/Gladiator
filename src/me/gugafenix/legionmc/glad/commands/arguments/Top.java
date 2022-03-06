@@ -14,6 +14,15 @@ public class Top {
 	
 	public void execute(Player p, String cmd, String[] args) {
 		
+		if (args[1] == null) {
+			p.sendMessage("§3Gladiador Top Help");
+			p.sendMessage("§b/top reset §f- §bReseta o top gladiador");
+			p.sendMessage("§b/top clã <clã> §f- §bExibe a posição do clã no gladiador");
+			p.sendMessage("§b/top help §f- §bExibe os comandos relacionados ao top");
+			p.sendMessage("§b/top §f- §bAbre o menu do top gladiador");
+			return;
+		}
+		
 		switch (preparedArgument(args[1].toLowerCase())) {
 		case "help":
 			p.sendMessage("§3Gladiador Top Help");
@@ -59,8 +68,8 @@ public class Top {
 		
 		if (arg.equalsIgnoreCase("ajuda") || arg.equalsIgnoreCase("comandos")) return "help";
 		if (arg.equalsIgnoreCase("clear") || arg.equalsIgnoreCase("resetar")) return "reset";
-		if (arg.equalsIgnoreCase("clear") || arg.equalsIgnoreCase("resetar")) return "clan";
-		else return null;
+		if (arg.equalsIgnoreCase("myclan") || arg.equalsIgnoreCase("clã")) return "clan";
+		else return arg.toLowerCase();
 	}
 	
 }

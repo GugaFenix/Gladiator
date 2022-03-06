@@ -10,9 +10,10 @@ import me.gugafenix.legionmc.glad.player.GladPlayer.SelectionStatus;
 import me.gugafenix.legionmc.glad.tasks.Tasks;
 import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
 
-public class ForceStart {
+public class ForceSelection {
 	
 	public void execute(Player p, String cmd, String[] args) {
+		
 		Gladiator glad = Gladiator.getGladRunning();
 		
 		if (!p.hasPermission("*")) {
@@ -25,17 +26,18 @@ public class ForceStart {
 			return;
 		}
 		BukkitTask task = glad.getTaskRunning();
-		if (task == Tasks.getStartBattle() || glad.getTaskRunning() == null) {
-			p.sendMessage(Main.tag + "§cjá está em batalha");
+		if (task == Tasks.getCheckSelection() || glad.getTaskRunning() == null) {
+			p.sendMessage(Main.tag + "§cjá está em seleção");
 			return;
 		}
 		
 		for (GladPlayer gp : glad.getPlayers()) {
 			gp.setSelectionStatus(SelectionStatus.READY);
-			gp.getPlayer().sendMessage(Main.tag + "§3O início do gladiador foi sancionado mais cedo por " + p.getName());
+			gp.getPlayer().sendMessage(Main.tag + "§3O início do processo de seleção foi sancionado mais cedo por " + p.getName());
 		}
 		
-		Gladiator.getGladRunning().runTask(TaskId.START_BATTLE);
+		Gladiator.getGladRunning().runTask(TaskId.CHECK_SELECTION);
+		
 	}
 	
 }

@@ -1,34 +1,41 @@
 package me.gugafenix.legionmc.glad.commands.arguments;
 
+import java.util.HashMap;
+import java.util.TreeMap;
+
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.HClan.Objects.Clan;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
+import me.gugafenix.legionmc.glad.utils.ValueComparator;
 
 public class Info {
 	
-	public void execute(Player p, String cmd, String[] args) {
+	public void execute(CommandSender sender, String cmd, String[] args) {
 		
 		Gladiator glad = Gladiator.getGladRunning();
 		
 		if (glad == null) {
-			p.sendMessage(Main.tag + "§cO servidor não possui nenhum gladiador ocorrendo");
+			sender.sendMessage(Main.tag + "§cO servidor não possui nenhum gladiador ocorrendo");
 			return;
 		}
 		
-		p.sendMessage("§3§l[§b§lBoletim do Gladiador§3§l]");
-		p.sendMessage("§2Quantidade de clãs: §a" + glad.getClans().size());
-		p.sendMessage("§7Clã com mais kills: §7" + getBestClan(glad)[0]);
-		p.sendMessage("§6Clã com mais membros: §e" + getBestClan(glad)[1]);
-		p.sendMessage("§3Tempo de duração: §b" + getDurationTime(glad));
-		p.sendMessage("§4§l[§cClãs sobreviventes§4§l]");
-		p.sendMessage(getClanList(glad));
+		sender.sendMessage("§3§l[§b§lBoletim do Gladiador§3§l]");
+		sender.sendMessage("§2Quantidade de clãs: §a" + glad.getClans().size());
+		sender.sendMessage("§7Clã com mais kills: §7" + getBestClan(glad)[0]);
+		sender.sendMessage("§6Clã com mais membros: §e" + getBestClan(glad)[1]);
+		sender.sendMessage("§3Tempo de duração: §b" + getDurationTime(glad));
+		sender.sendMessage("§4§l[§cClãs sobreviventes§4§l]");
+		sender.sendMessage(getClanList(glad));
 		
 	}
 	
 	private String[] getBestClan(Gladiator glad) {
+		HashMap<Clan, Integer> killMap = new HashMap<>();
+		HashMap<Clan, Integer> memberMap = new HashMap<>();
 		
 		for (Clan clan : glad.getClans()) {
 			int kills = 0;
@@ -41,18 +48,36 @@ public class Info {
 				
 				if (gp.isWatching()) continue;
 				members++;
+				
 			}
 			
-			return new String[] { String.valueOf(kills), String.valueOf(members) };
+			killMap.put(clan, kills);
+			memberMap.put(clan, members);
+			
 		}
-		return null;
+		ValueComparator vcp = new ValueComparator(killMap);
+		TreeMap<Clan, Integer> tree = new TreeMap<>(vcp);
 		
+		String bestKiller = tree.firstKey().getTagClan();
+		
+		tree.clear();
+		
+		vcp = new ValueComparator(memberMap);
+		tree = new TreeMap<>(vcp);
+		String moreMembers = tree.firstKey().getTagClan();
+		
+		tree.clear();
+		killMap.clear();
+		memberMap.clear();
+		
+		return new String[] { bestKiller, moreMembers };
 	}
 	
 	private String getDurationTime(Gladiator glad) {
-		long seconds = ((glad.getStartMilis() - System.currentTimeMillis()) * 1000);
-		long minutes = ((glad.getStartMilis() - System.currentTimeMillis()) * 1000 * 60);
-		long hours = ((glad.getStartMilis() - System.currentTimeMillis()) * 1000 * 60 * 60);
+		long miliSeconds = glad.getStartMilis() - System.currentTimeMillis();
+		long seconds = miliSeconds * 100;
+		long minutes = seconds * 60;
+		long hours = minutes * 60;
 		
 		if (hours >= 1) return hours + " horas";
 		if (minutes >= 1) return minutes + " minutos";

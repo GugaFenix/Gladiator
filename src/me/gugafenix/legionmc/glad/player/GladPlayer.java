@@ -15,7 +15,6 @@ import me.HClan.Objects.Jogador;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.objects.Gladiator.GladiatorStatus;
-import me.gugafenix.legionmc.glad.tasks.Tasks;
 import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
 import me.gugafenix.legionmc.glad.utils.API;
 import net.minecraft.server.v1_8_R3.EnumParticle;
@@ -135,8 +134,7 @@ public class GladPlayer {
 				tp.sendMessage("§6§lO death match iniciará em 10 segundos");
 			}
 			
-			new Tasks(TaskId.DEATHMATCH, glad).start();
-			
+			glad.runTask(TaskId.DEATHMATCH);
 		}
 		
 		if (glad.getClans().size() <= 1) {

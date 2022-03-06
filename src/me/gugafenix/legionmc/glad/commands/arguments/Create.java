@@ -10,10 +10,9 @@ import me.gugafenix.legionmc.glad.utils.API;
 
 public class Create {
 	public void execute(CommandSender sender, String cmd, String[] args) {
-		Player p = (Player) sender;
 		
-		if (!p.hasPermission("*")) {
-			p.sendMessage("§cVocê não tem permissão para isto");
+		if (!sender.hasPermission("*")) {
+			sender.sendMessage("§cVocê não tem permissão para isto");
 			return;
 		}
 		
@@ -22,14 +21,12 @@ public class Create {
 				String name = args[1].replace(".yml", "") + ".yml";
 				Main.getFileManager().saveResource("Default.yml", Main.getMain().getDataFolder() + "/Presets/", name, false);
 				new File(name, Main.getMain().getDataFolder() + "/Presets/" + name);
-				p.sendMessage(Main.tag + "§aArquivo preset criado! Para edita-lo v� até §7'Plugins/Gladiator/Presets/" + name + "' §a.");
-				API.getApi().playSound(p, Sound.ANVIL_USE, Sound.CREEPER_HISS);
-			} else {
-				p.sendMessage(Main.tag + "§cJá existe um preset com este nome!");
-				API.getApi().playSound(p, Sound.VILLAGER_NO, Sound.ARROW_HIT);
-			}
+				sender.sendMessage(
+						Main.tag + "§aArquivo preset criado! Para edita-lo v� até §7'Plugins/Gladiator/Presets/" + name + "' §a.");
+			} else sender.sendMessage(Main.tag + "§cJá existe um preset com este nome!");
+			
 		} else {
-			p.sendMessage(Main.tag + "§cUse /Glad criar <nome do preset>, para criar um novo arquivo preset do gladiador.");
+			sender.sendMessage(Main.tag + "§cUse /Glad criar <nome do preset>, para criar um novo arquivo preset do gladiador.");
 			return;
 		}
 	}

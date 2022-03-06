@@ -10,6 +10,7 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 
 import me.gugafenix.legionmc.glad.main.Main;
+import me.gugafenix.legionmc.glad.objects.Timer;
 
 public class FileManager {
 	private List<File> files;
@@ -33,6 +34,8 @@ public class FileManager {
 		Main.getMain().log(
 				Main.tag.replace("0", "8") + "§aCarregamento dos presets finalizado em §d" + (System.currentTimeMillis() - milis) + "ms§a!",
 				"");
+		
+		new Timer();
 	}
 	
 	public File getFile(String name) {

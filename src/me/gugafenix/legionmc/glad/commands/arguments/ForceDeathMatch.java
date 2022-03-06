@@ -26,7 +26,7 @@ public class ForceDeathMatch {
 			return;
 		}
 		BukkitTask task = glad.getTaskRunning();
-		if (task == new Tasks(TaskId.DEATHMATCH, glad).getDeathMatch() || glad.getTaskRunning() == null) {
+		if (task == Tasks.getDeathMatch()|| glad.getTaskRunning() == null) {
 			p.sendMessage(Main.tag + "§cO gladiador está iniciando ou já está em batalha");
 			return;
 		}
@@ -36,7 +36,6 @@ public class ForceDeathMatch {
 			gp.getPlayer().sendMessage(Main.tag + "§3O início do death match foi sancionado mais cedo por " + p.getName());
 		}
 		
-		task.cancel();
 		Gladiator.getGladRunning().runTask(TaskId.DEATHMATCH);
 		
 	}
