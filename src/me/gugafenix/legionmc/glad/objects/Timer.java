@@ -1,6 +1,10 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.objects;
 
-import org.bukkit.configuration.file.FileConfiguration;
+import java.util.ListIterator;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -9,101 +13,79 @@ import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
 
 public class Timer {
-	private enum TimeType {
-		DAYS, HOURS, MINUTES, SECONDS;
-	}
 	
-	private File file;
-	private int time;
-	private BukkitTask task;
-	private static Timer timer;
+	private Gladiator gladRunning;
+	private char timeType;
+	private BukkitTask runnable;
+	public static Timer timer;
 	
-	public Timer() {
-		timer = this;
-		task = new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				
-				if (file == null) {
-					Main.getMain().log("",
-							Main.tag + "§cO preset informado para ser iniciado automaticamente não existe ou não foi definido", "");
-				} else {
-					
-					if (!Gladiator.hasGladRunning()) {
-						new Gladiator(file).runTask(TaskId.SEND_WARNS);
-					} else {
-						Main.getMain().log("", Main.tag + "§cO início de um gladiador utilizando o preset §f" + file.getName()
-								+ " §cfoi cancelado por já haver um gladiador em andamento", "");
-					}
-				}
-			}
-		}.runTaskTimerAsynchronously(Main.getMain(), getTime(getAutoStartFile()), getTime(getAutoStartFile()));
-	}
-	
-	private int getTime(File file) {
-		TimeType timeType = TimeType.DAYS;
-		
-		String str = file.getConfig().getString("SpacoEntreGladiadores");
-		
-		if (str.endsWith("d")) timeType = TimeType.DAYS;
-		else if (str.endsWith("s")) timeType = TimeType.SECONDS;
-		else if (str.endsWith("h")) timeType = TimeType.HOURS;
-		else if (str.endsWith("m")) timeType = TimeType.MINUTES;
-		else timeType = TimeType.SECONDS;
-		
-		time = Integer.valueOf(str.replace(str.charAt(str.length() - 1) + "", ""));
-		
-		switch (timeType) {
-		case DAYS:
-			return time * 20 * 60 * 60 * 24;
-		case HOURS:
-			return time * 20 * 60 * 60;
-		case MINUTES:
-			return time * 20 * 60;
-		case SECONDS:
-			return time * 20;
-		default:
-			return time * 0;
-		}
-	}
+	public Timer() { timer = this; }
 	
 	private File getAutoStartFile() {
-		for (File f : Main.getFileManager().getFiles()) {
-			FileConfiguration config = f.getConfig();
-			Boolean autoStart = config.getBoolean("AutoStart");
-			if (autoStart) return f;
+		for (File file : Main.getFileManager().getFiles()) {
+			ListIterator<File> it = Main.getFileManager().getFiles().listIterator();
+			while (it.hasNext()) if ((file = it.next()).getConfig().getBoolean("AutoStart")) return file;
 		}
 		return null;
 	}
 	
-	public File getFile() { return file; }
+	private int getTime() {
+		String str = getAutoStartFile().getConfig().getString("EspacoEntreGladiadores");
+		int space = Integer.valueOf(str.replace(str.charAt(str.length() - 1) + "", ""));
+		switch (getTimeType()) {
+		case 's':
+			return space * 20;
+		case 'h':
+			return space * 20 * 60 * 60;
+		case 'm':
+			return space * 20 * 60;
+		case 'd':
+			return space * 20 * 60 * 60 * 24;
+		default:
+			return 7 * 20 * 60 * 60 * 24;
+		}
+	}
 	
-	public void setFile(File file) { this.file = file; }
+	private char getTimeType() {
+		String str = getAutoStartFile().getConfig().getString("EspacoEntreGladiadores");
+		return this.timeType = str.toCharArray()[str.length() - 1];
+	}
 	
-	public void reload() {
-		task.cancel();
-		task = new BukkitRunnable() {
+	public void start() {
+		
+		if (getAutoStartFile() == null) {
+			
+			Main.getMain().log("", Main.tag + "§cNenhum preset definido para ser auto-iniciado", "");
+			return;
+			
+		}
+		
+		if (this.runnable != null) this.runnable.cancel();
+		
+		this.runnable = new BukkitRunnable() {
 			
 			@Override
 			public void run() {
 				
-				if (file == null) {
-					Main.getMain().log("",
-							Main.tag + "§cO preset informado para ser iniciado automaticamente não existe ou não foi definido");
-				} else {
-					
-					if (!Gladiator.hasGladRunning()) {
-						new Gladiator(file).runTask(TaskId.SEND_WARNS);
-					} else {
-						Main.getMain().log("", Main.tag + "§cO início de um gladiador utilizando o preset §f" + file.getName()
-								+ " §cfoi cancelado por já haver um gladiador em andamento", "");
-					}
+				if (Gladiator.hasGladRunning()) {
+					Main.getMain().log("", Main.tag
+							+ "§cO gladiador programado para ser auto-iniciado não pode realizar tal ação por já haver um gladiador em andamento.",
+							"§6Para reiniciar o timer, basta reiniciar o plugin", "");
+					this.cancel();
+					return;
 				}
+				
+				gladRunning = new Gladiator(getAutoStartFile());
+				gladRunning.runTask(TaskId.SEND_WARNS);
 			}
-		}.runTaskTimerAsynchronously(Main.getMain(), getTime(getAutoStartFile()), getTime(getAutoStartFile()));
+		}.runTaskTimerAsynchronously(Main.getMain(), getTime(), getTime());
+		
 	}
 	
+	public Gladiator getGladRunning() { return gladRunning; }
+	
 	public static Timer getTimer() { return timer; }
+	
+	public static void setTimer(Timer timer) { Timer.timer = timer; }
 	
 }

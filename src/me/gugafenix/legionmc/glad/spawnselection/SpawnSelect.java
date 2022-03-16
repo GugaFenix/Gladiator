@@ -1,18 +1,29 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.spawnselection;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import me.HClan.Utils.Item;
 import me.gugafenix.legionmc.glad.file.File;
 import me.gugafenix.legionmc.glad.main.Main;
+import me.gugafenix.legionmc.glad.protocol.FastProtocol;
 import me.gugafenix.legionmc.glad.utils.API;
+import net.minecraft.server.v1_8_R3.Block;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.IBlockData;
+import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 
 public class SpawnSelect {
 	private Player p;
@@ -54,11 +65,20 @@ public class SpawnSelect {
 	
 	public void cancelSelection() {
 		
-		p.sendMessage(Main.tag + "§cSeleção de spawn points cancelado");
+		p.sendMessage(Main.tag + "§cSeleção de spawn points cancelada");
 		API.getApi().playSound(p, Sound.LEVEL_UP);
-		p.teleport(fromLocation);
 		SpawnSelectManager.getManager().getSelects().remove(this);
-		for (Location loc : locations) loc.getBlock().setType(Material.AIR);
+		
+		for (Location loc : locations) {
+			
+			PacketPlayOutBlockChange pktblock = new PacketPlayOutBlockChange(((CraftWorld) loc.getWorld()).getHandle(),
+					new BlockPosition(loc.getX(), loc.getY(), loc.getZ()));
+			pktblock.block = Block.getById(loc.getBlock().getTypeId()).getBlockData();
+			
+			new FastProtocol(Bukkit.getServer()).sendPacket(pktblock, p);
+		}
+		
+		p.teleport(fromLocation);
 		locations.clear();
 	}
 	
@@ -73,14 +93,23 @@ public class SpawnSelect {
 	
 	private void saveLocations() {
 		List<String> stringlist = new ArrayList<>();
-		stringlist.clear();
 		for (Location loc : locations) {
-			loc.getBlock().setType(Material.AIR);
 			stringlist.add(serialize(loc));
+			
+			PacketPlayOutBlockChange pktblock = new PacketPlayOutBlockChange(((CraftWorld) loc.getWorld()).getHandle(),
+					new BlockPosition(loc.getX(), loc.getY(), loc.getZ()));
+			
+			net.minecraft.server.v1_8_R3.Block nmsblock = net.minecraft.server.v1_8_R3.Block.getById(loc.getBlock().getTypeId());
+			IBlockData data = nmsblock.getBlockData();
+			pktblock.block = data;
+			
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(pktblock);
 		}
-		file.getConfig().set("Spawns", stringlist);
+		
+		file.getConfig().set("Spawns", new ArrayList<>(stringlist));
 		file.save();
 		locations.clear();
+		stringlist.clear();
 	}
 	
 	private String serialize(Location loc) {
@@ -89,7 +118,7 @@ public class SpawnSelect {
 		double y = loc.getBlockY();
 		double z = loc.getBlockZ();
 		
-		return x + ":" + y + ":" + z;
+		return ( x + ":" + y + ":" + z ).replace(".0", "");
 	}
 	
 	public Player getPlayer() { return p; }

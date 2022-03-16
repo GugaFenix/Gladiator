@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.commands.arguments;
 
 import java.util.Map;
@@ -19,7 +22,7 @@ public class Leave {
 		Gladiator glad = Gladiator.getGladRunning();
 		GladPlayer gp = Main.getPlayerManager().getPlayer(p);
 		
-		if (!Gladiator.HasGladRunning()) {
+		if (!Gladiator.hasGladRunning()) {
 			p.sendMessage(Main.tag + "§cO servidor não possui nenhum gladiador em andamento.");
 			API.getApi().playSound(p, Sound.VILLAGER_NO);
 			return;

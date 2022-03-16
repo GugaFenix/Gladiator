@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.file;
 
 import java.io.IOException;

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.spawnselection.events;
 
 import java.util.List;
@@ -6,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +22,9 @@ import me.gugafenix.legionmc.glad.spawnselection.SpawnSelect;
 import me.gugafenix.legionmc.glad.spawnselection.SpawnSelectManager;
 import me.gugafenix.legionmc.glad.utils.API;
 import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.IBlockData;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockBreakAnimation;
+import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 
 public class PlayerPlaceBlock implements Listener {
 	
@@ -38,24 +44,31 @@ public class PlayerPlaceBlock implements Listener {
 		if (hasComponents) {
 			if (select == null) return;
 			
-			p.getInventory().setItem(4, e.getItemInHand());
-			
 			if (select.getWorld() != p.getWorld()) return;
 			if (!e.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase("§aAdicionar spawn point")) return;
+			
+			e.setCancelled(true);
 			
 			List<Location> locs = select.getLocations();
 			locs.add(block.getLocation());
 			Location loc = block.getLocation();
+			
+			PacketPlayOutBlockChange pktblock = new PacketPlayOutBlockChange(((CraftWorld) loc.getWorld()).getHandle(),
+					new BlockPosition(loc.getX(), loc.getY(), loc.getZ()));
+			
+			@SuppressWarnings("deprecation")
+			net.minecraft.server.v1_8_R3.Block nmsblock = net.minecraft.server.v1_8_R3.Block.getById(Material.ENDER_PORTAL_FRAME.getId());
+			IBlockData data = nmsblock.getBlockData();
+			pktblock.block = data;
+			
 			
 			new BukkitRunnable() {
 				int stage = 0;
 				
 				@Override
 				public void run() {
-					if (loc.getBlock().getType() != Material.ENDER_PORTAL_FRAME) {
-						this.cancel();
-						return;
-					}
+					
+					((CraftPlayer) p).getHandle().playerConnection.sendPacket(pktblock);
 					
 					if (stage > 7) {
 						p.sendMessage("§aSpawnpoint definido!");
@@ -74,7 +87,7 @@ public class PlayerPlaceBlock implements Listener {
 					((CraftPlayer) p).getHandle().playerConnection.sendPacket(pb);
 					stage++;
 				}
-			}.runTaskTimerAsynchronously(Main.getMain(), 0, 10);
+			}.runTaskTimerAsynchronously(Main.getMain(), 0, 1);
 		}
 	}
 	

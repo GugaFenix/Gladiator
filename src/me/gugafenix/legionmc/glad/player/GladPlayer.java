@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.player;
 
 import java.util.ArrayList;
@@ -91,23 +94,26 @@ public class GladPlayer {
 		glad.getPlayers().forEach(tp -> {
 			tp.getPlayer()
 					.sendMessage("§cO jogador §7" + this.getPlayer().getName() + " " + this.getClan().getTagClan() + " §cfoi eliminado");
-			tp.getPlayer().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+			getPlayer().spigot().respawn();
+			getPlayer().teleport(glad.getCabin().getLocation());
 			if (this.getClan() == tp.getClan()) return;
-			tp.setEnemies(tp.getEnemies() - 1);
+			glad.updateInfoFromAll();
 			this.setInGladiator(false);
 		});
 		
 		// Check se o clan foi eliminado
 		for (Clan clans : glad.getClans()) {
-			int i = 0;
-			for (Player cp : clans.getOnlinePlayers()) {
-				if (Main.getPlayerManager().getPlayer(cp) == null && !Main.getPlayerManager().getPlayer(cp).isInGladiator()) continue;
-				if (Main.getPlayerManager().getPlayer(cp).isWatching()) continue;
-				i++;
+			boolean clanKilled = true;
+			for (Player op : getClan().getOnlinePlayers()) {
+				GladPlayer gp = Main.getPlayerManager().getPlayer(op);
+				if (gp != null && gp.isInGladiator && !gp.isWatching) {
+					clanKilled = false;
+					break;
+				}
 			}
 			
 			// Check memebros do clã no glad
-			if (i <= 0) {
+			if (clanKilled) {
 				glad.getClans().remove(clans);
 				Bukkit.getOnlinePlayers().forEach(all -> {
 					all.sendMessage(Main.tag + "§bBoletim do gladiador");
@@ -122,7 +128,7 @@ public class GladPlayer {
 		
 		for (GladPlayer gps : glad.getPlayers()) {
 			if (gps.getClan() == this.getClan()) continue;
-			gps.setAllies(gps.getAllies() - 1);
+			glad.updateInfoFromAll();
 		}
 		
 		// Iniciando death match
@@ -131,6 +137,7 @@ public class GladPlayer {
 			for (GladPlayer gps : glad.getPlayers()) {
 				Player tp = gps.getPlayer();
 				tp.teleport(glad.getDeathMatchWorld().getSpawnLocation());
+				glad.getDeathMatchWorld().setPVP(false);
 				tp.sendMessage("§6§lO death match iniciará em 10 segundos");
 			}
 			
@@ -140,7 +147,8 @@ public class GladPlayer {
 		if (glad.getClans().size() <= 1) {
 			Clan winner = glad.getClans().get(0);
 			Clan lastClan = this.getClan();
-			if (glad.getWinner() != null) { glad.setWinner(glad.getClans().get(0)); }
+			
+			if (glad.getWinner() != null) { glad.setWinner(winner); }
 			
 			for (Player all : Bukkit.getOnlinePlayers()) {
 				all.sendMessage(Main.tag + "§bBoletim do gladiador");
@@ -154,18 +162,18 @@ public class GladPlayer {
 				
 				for (Player cp : clan.getOnlinePlayers()) {
 					cp.teleport(unserialize(glad.getPreset().getConfig().getString("Server.Lobby.localização")));
-					API.getApi().sendTitle("§b§lPARAbÉNS!", "§aVocê foi um dos ganhadores do gladiador", cp);
+					API.getApi().sendTitle("§b§lPARABÉNS!", "§aVocê foi um dos ganhadores do gladiador", cp);
 					
 					for (ItemStack item : cp.getInventory()) {
 						if (!isArmor(item)) continue;
-						if (item.getDurability() > item.getType().getMaxDurability() / 2) continue;
+						if (item.getDurability() >= item.getType().getMaxDurability() / 2) continue;
 						
 						item.setDurability((short) (item.getType().getMaxDurability() / 2));
 						
 					}
 					
 					cp.sendMessage(Main.tag
-							+ "§aComo compensação por sua vitória, suas armaduras e espadas no inventário foram reparadas até a metade!");
+							+ "§aComo compensação por sua vitória, suas armaduras e espadas no inventário foram reparadas em §f50%");
 					API.getApi().playSound(cp, Sound.ANVIL_USE);
 				}
 				
@@ -190,75 +198,9 @@ public class GladPlayer {
 	}
 	
 	public boolean isArmor(ItemStack item) {
-		boolean isArmor = false;
-		switch (item.getType()) {
-		case DIAMOND_CHESTPLATE:
-			isArmor = true;
-			break;
-		case DIAMOND_LEGGINGS:
-			isArmor = true;
-			break;
-		case DIAMOND_HELMET:
-			isArmor = true;
-			break;
-		case DIAMOND_BOOTS:
-			isArmor = true;
-			break;
-		case IRON_CHESTPLATE:
-			isArmor = true;
-			break;
-		case IRON_LEGGINGS:
-			isArmor = true;
-			break;
-		case IRON_HELMET:
-			isArmor = true;
-			break;
-		case IRON_BOOTS:
-			isArmor = true;
-			break;
-		case GOLD_CHESTPLATE:
-			isArmor = true;
-			break;
-		case GOLD_LEGGINGS:
-			isArmor = true;
-			break;
-		case GOLD_HELMET:
-			isArmor = true;
-			break;
-		case GOLD_BOOTS:
-			isArmor = true;
-			break;
-		case LEATHER_CHESTPLATE:
-			isArmor = true;
-			break;
-		case LEATHER_LEGGINGS:
-			isArmor = true;
-			break;
-		case LEATHER_HELMET:
-			isArmor = true;
-			break;
-		case LEATHER_BOOTS:
-			isArmor = true;
-			break;
-		case WOOD_SWORD:
-			isArmor = true;
-			break;
-		case IRON_SWORD:
-			isArmor = true;
-			break;
-		case DIAMOND_SWORD:
-			isArmor = true;
-			break;
-		case GOLD_SWORD:
-			isArmor = true;
-			break;
-		default:
-			isArmor = false;
-			break;
-		}
-		
-		return isArmor;
-		
+		String type = item.getType().toString().toUpperCase();
+		if (type.contains("HELMET") || type.contains("CHESTPLATE") || type.contains("LEGGINGS") || type.contains("BOOTS") || type.contains("SWORD")) return true;
+		return false;
 	}
 	
 	public void updateInfos() {

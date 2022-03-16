@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.file;
 
 import java.io.FileOutputStream;
@@ -19,6 +22,7 @@ public class FileManager {
 	
 	public void loadConfigs() {
 		Main.getMain().log("", Main.tag.replace("0", "8") + "§3Carregamento dos presets iniciado...");
+		files.clear();
 		long milis = System.currentTimeMillis();
 		/*
 		 * Creating the presets folder
@@ -35,7 +39,9 @@ public class FileManager {
 				Main.tag.replace("0", "8") + "§aCarregamento dos presets finalizado em §d" + (System.currentTimeMillis() - milis) + "ms§a!",
 				"");
 		
-		new Timer();
+		Timer.setTimer(new Timer());
+		Timer.getTimer().start();
+		
 	}
 	
 	public File getFile(String name) {
@@ -57,7 +63,7 @@ public class FileManager {
 	
 	public void setFiles(List<File> files) { this.files = files; }
 	
-	public void saveResource(String resourcePath, String outPath, String outName,boolean replace) {
+	public void saveResource(String resourcePath, String outPath, String outName, boolean replace) {
 		
 		if (resourcePath == null || resourcePath.equals("")) {
 			

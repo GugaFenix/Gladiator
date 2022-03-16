@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.commands.arguments;
 
 import java.util.ArrayList;

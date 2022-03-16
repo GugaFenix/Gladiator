@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.utils;
 
 import org.bukkit.entity.Player;
@@ -24,7 +27,7 @@ public class PlaceHolder extends PlaceholderExpansion {
 		Jogador player = new Jogador(p.getName());
 		String string = params.replace("&", "�");
 		
-		if (Gladiator.HasGladRunning()) {
+		if (Gladiator.hasGladRunning()) {
 			if (params.toLowerCase().equalsIgnoreCase("tag")) return Main.tag;
 			else if (params.toLowerCase().equalsIgnoreCase("clan")) {
 				

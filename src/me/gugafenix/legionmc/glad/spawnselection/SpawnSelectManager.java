@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.spawnselection;
 
 import java.util.ArrayList;

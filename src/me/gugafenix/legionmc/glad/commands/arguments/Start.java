@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.commands.arguments;
 
 import java.io.File;
@@ -20,7 +23,7 @@ public class Start {
 		}
 		
 		// j� tem um glad rodando
-		if (Gladiator.HasGladRunning()) {
+		if (Gladiator.hasGladRunning()) {
 			sender.sendMessage(Main.tag + "§cO servidor já possui um evento gladiador ocorrendo");
 			return;
 		}

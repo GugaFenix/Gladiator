@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.invs.events;
 
 import java.util.HashMap;
@@ -129,11 +132,24 @@ public class onSelectPlayerEvent implements Listener {
 				else Gladiator.getGladRunning().runTask(TaskId.START_BATTLE);
 				
 			} else {
+				int slot = randomSlot(e.getInventory());
+				
+				if (slot == -1) {
+					p.sendMessage(Main.tag + "§eVocê não tem jogadores no clã.");
+					return;
+				}
+				
 				Inventory inv = e.getInventory();
-				ItemStack it = inv.getItem(randomSlot(inv));
+				ItemStack it = inv.getItem(slot);
 				Player sl = Bukkit
 						.getPlayer(it.getItemMeta().getDisplayName().replace("§" + it.getItemMeta().getDisplayName().charAt(1), ""));
-				for (int i = 0; i < Gladiator.getGladRunning().getMaxClanMembers(); i++) {
+				
+				int j = 0;
+				
+				if (e.getInventory().all(Material.SKULL_ITEM).size() <= 12) j = e.getInventory().all(Material.SKULL_ITEM).size();
+				else j = Gladiator.getGladRunning().getMaxClanMembers();
+				
+				for (int i = 0; i < j; i++) {
 					
 					// Substituindo o item
 					Item barrier = new Item(Material.BARRIER);
@@ -149,6 +165,7 @@ public class onSelectPlayerEvent implements Listener {
 					GladPlayer gp = Main.getPlayerManager().getPlayer(sl);
 					if (gp == null) gp = new GladPlayer(sl);
 					gp.setInGladiator(true);
+					Main.getPlayerManager().getPlayer(p).getSelectedPlayers().add(gp.getPlayer());
 					Gladiator.getGladRunning().getPlayers().add(gp);
 					
 					gp.getPlayer().sendMessage(Main.tag
@@ -165,9 +182,9 @@ public class onSelectPlayerEvent implements Listener {
 	}
 	
 	public int randomSlot(Inventory inv) {
-		int random = new Random().nextInt(Gladiator.getGladRunning().getMaxClanMembers());
+		int heads = inv.all(Material.SKULL_ITEM).size();
+		if (heads <= 0) return -1;
 		
-		if (inv.getItem(random).getType() != Material.SKULL) { return randomSlot(inv); }
-		return 0;
+		return new Random().nextInt(heads);
 	}
 }

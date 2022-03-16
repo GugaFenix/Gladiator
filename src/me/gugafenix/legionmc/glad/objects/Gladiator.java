@@ -1,15 +1,18 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.objects;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
 import me.HClan.Objects.Clan;
+import me.HClan.Objects.DiscordClan;
 import me.gugafenix.legionmc.glad.border.BorderManager;
 import me.gugafenix.legionmc.glad.cabin.Cabin;
 import me.gugafenix.legionmc.glad.file.File;
@@ -18,16 +21,16 @@ import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.player.GladPlayer.SelectionStatus;
 import me.gugafenix.legionmc.glad.tasks.Tasks;
 import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class Gladiator {
 	private World world, DeathMatchWorld;
 	private List<Clan> clans;
 	private File preset;
-	private int borderReduction, clanAmountToDeathMatch, timeToDecreaseBorder, timeToStart, PlayerAmount;
+	private int borderReduction, clanAmountToDeathMatch, timeToStart, PlayerAmount;
 	private List<String> warns, scoreboard;
 	private int timeBelowWarns;
 	private String title, subtitle;
-	private static boolean hasGladRunning;
 	private static Gladiator gladRunning;
 	private List<GladPlayer> players;
 	private GladiatorStatus status;
@@ -38,6 +41,13 @@ public class Gladiator {
 	private Clan winner;
 	private BorderManager border;
 	private BukkitTask runningTask;
+	private boolean randomWarriors;
+	
+	// Borda
+	private int allTime;
+	private int startSize;
+	private int borderDamage;
+	private int finalSize;
 	
 	public static enum GladiatorStatus {
 		WARNING, IN_BATTLE, SELECTING, LOCKED, DEATH_MATCH;
@@ -45,13 +55,10 @@ public class Gladiator {
 	
 	@SuppressWarnings("unchecked")
 	public Gladiator(File presetFile) {
-		this.border = new BorderManager(DeathMatchWorld, null);
-		
 		this.winner = null;
 		this.clans = new ArrayList<>();
 		this.players = new ArrayList<>();
 		this.status = GladiatorStatus.WARNING;
-		setHasGladRunning(true);
 		setGladRunning(this);
 		/*
 		 * Configuration
@@ -66,14 +73,6 @@ public class Gladiator {
 		this.timeToStart = config.getInt("Evento.TempoParaIniciar");
 		this.timeBelowWarns = config.getInt("Evento.TempoEntreAvisos");
 		this.spawnPoints = (List<String>) config.getList("Spawns");
-		/*
-		 * Border
-		 */
-		border.setCenter(
-				new Location(world, config.getInt("Borda.Centro.X"), config.getInt("Borda.Centro.Y"), config.getInt("Borda.Centro.Z")));
-		border.setStartSize(config.getInt("Borda.Tamanho.Inicio"));
-		this.timeToDecreaseBorder = config.getInt("Borda.Reducao.Tempo");
-		this.borderReduction = config.getInt("Borda.Tamanho.Reducao");
 		/*
 		 * DeathMatch
 		 */
@@ -98,6 +97,11 @@ public class Gladiator {
 		 * Camarote
 		 */
 		this.cabin = new Cabin(this);
+		
+		this.startSize = config.getInt("Borda.Tamanho.Inicio");
+		this.finalSize = config.getInt("Borda.Tamanho.Final");
+		this.borderDamage = config.getInt("Borda.Dano");
+		this.allTime = config.getInt("Borda.Tamanho.TempoTotal");;
 	}
 	
 	public void runTask(TaskId id) {
@@ -109,7 +113,9 @@ public class Gladiator {
 	
 	public BukkitTask getTaskRunning() { return runningTask; }
 	
-	public static boolean hasGladRunning() { return hasGladRunning; }
+	public static boolean hasGladRunning() { return gladRunning != null ? true : false; }
+	
+	public double getBorderDamage() { return borderDamage; }
 	
 	public void setPlayers(List<GladPlayer> players) { this.players = players; }
 	
@@ -143,13 +149,13 @@ public class Gladiator {
 	
 	public void setPreset(File preset) { this.preset = preset; }
 	
-	public int getTimeToDecreaseBorder() { return timeToDecreaseBorder; }
-	
-	public void setTimeToDecreaseBorder(int timeToDecreaseBorder) { this.timeToDecreaseBorder = timeToDecreaseBorder; }
-	
 	public int getBorderReduction() { return borderReduction; }
 	
 	public void setBorderReduction(int borderReduction) { this.borderReduction = borderReduction; }
+	
+	public int getFinalSize() { return finalSize; }
+	
+	public void setFinalSize(int finalSize) { this.finalSize = finalSize; }
 	
 	public int getClanAmountToDeathMatch() { return clanAmountToDeathMatch; }
 	
@@ -171,10 +177,6 @@ public class Gladiator {
 	
 	public void setScoreboard(List<String> scoreboard) { this.scoreboard = scoreboard; }
 	
-	public static boolean HasGladRunning() { return hasGladRunning; }
-	
-	public static void setHasGladRunning(boolean hasGladRunning) { Gladiator.hasGladRunning = hasGladRunning; }
-	
 	public static Gladiator getGladRunning() { return gladRunning; }
 	
 	public static void setGladRunning(Gladiator gladRunning) { Gladiator.gladRunning = gladRunning; }
@@ -191,6 +193,16 @@ public class Gladiator {
 	
 	public void setMinClanMembers(int minClanMembers) { this.minClanMembers = minClanMembers; }
 	
+	public int getAllTime() { return allTime; }
+	
+	public void setAllTime(int allTime) { this.allTime = allTime; }
+	
+	public int getStartSize() { return startSize; }
+	
+	public void setStartSize(int startSize) { this.startSize = startSize; }
+	
+	public void setBorderDamage(int borderDamage) { this.borderDamage = borderDamage; }
+	
 	public int getMinClanKDR() { return minClanKDR; }
 	
 	public void setMinClanKDR(int minClanKDR) { this.minClanKDR = minClanKDR; }
@@ -206,22 +218,24 @@ public class Gladiator {
 	public void cancel() {
 		if (this.runningTask != null) this.runningTask.cancel();
 		
-		if (getPlayers() != null && !getPlayers().isEmpty() && this.getClans().size() != 0) {
+		if (getPlayers() != null && !getPlayers().isEmpty() && this.getClans().size() > 0) {
 			
 			getPlayers().forEach(p -> {
-				getPlayers().remove(p);
 				p.getPlayer().teleport(Bukkit.getServer().getWorld(Bukkit.getWorlds().get(0).getName()).getSpawnLocation());
 				p.setInGladiator(false);
 				p.setSelectedPlayers(null);
 				p.setSelectionStatus(SelectionStatus.NO_STATUS);
-				Main.getPlayerManager().getPlayers().remove(p);
-				getPlayers().remove(p);
+				
+				DiscordClan dc = p.getClan().getDiscordClan();
+				TextChannel channel = dc.getChannelAvisos();
+				dc.sendMessage(channel, dc.getRole() + " **O gladiador foi cancelado.**");
+				
 			});
-			
+			Main.getPlayerManager().getPlayers().clear();
+			getPlayers().clear();
 		}
 		
 		gladRunning = null;
-		hasGladRunning = false;
 	}
 	
 	public void updateInfoFromAll() { this.getPlayers().forEach(all -> all.updateInfos()); }
@@ -239,4 +253,9 @@ public class Gladiator {
 	public Clan getWinner() { return winner; }
 	
 	public void setWinner(Clan winner) { this.winner = winner; }
+	
+	public boolean isRandomWarriors() { return randomWarriors; }
+	
+	public void setRandomWarriors(boolean randomWarriors) { this.randomWarriors = randomWarriors; }
+	
 }

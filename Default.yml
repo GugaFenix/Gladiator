@@ -17,16 +17,18 @@
 # Este preset será instanciado para iniciar um gladiador automáticamente?
 # OBS: Apenas um preset pode ser definido como true
 AutoStart: false
-EspaçoEntreGladiadores: '7d'
+EspacoEntreGladiadores: '7d'
 
-# Configura��es do evento
-# Mundo -> Mundo em que o evento ocorrer�
+# Configurações do evento
+# Mundo -> Mundo em que o evento ocorrerá
 # TempoParaIniciar -> Tempo desde o primeiro aviso at� o in�cio do evento
-# NumAvisos -> Quantidade de avisos qoe ser�o exibidos at� o evento iniciar
+# NumAvisos -> Quantidade de avisos qoe serão exibidos até o evento iniciar
+# SeleçãoAleatória -> Caso true, Os players que participarão do gladiador serão aleatórios
 Evento:
   Mundo: 'World'
   TempoParaIniciar: 30
   TempoEntreAvisos: 1
+  SeleçãoAleatória: false
 
 Camarote: '100:100:100'
   
@@ -38,18 +40,17 @@ DeathMatch:
     
 # Configurações da borda
 # Inicio -> Tamanho inicial da borda
-# Redu��o -> Quantidade de blocos que a borda reduzir� ap�s o tempo definido
-# TempoReducao -> De quanto em quanto tempo a borda diminuir�
+# Redução -> Quantidade de blocos que a borda reduzir� ap�s o tempo definido
+# TempoTotal -> Em quantos minutos a borda chegará ao seu tamanho mínimo?
 # Centro -> Coordenadas do centro da borda
 Borda:
-  Dano: 2
+  Dano: 10
   Tamanho:
-    Inicio: 1000
-    Reducao: 10
-    TempoReducao: 1
+    Inicio: 100
+    Final: 10
+    TempoTotal: 10
   Centro:
     X: 0
-    Y: 100
     Z: 0
     
     
@@ -65,7 +66,7 @@ Clan:
 Aviso: 
   -  '%glad_tag%'
   -  '&bEvento gladiador iniciando...'
-  -  '&dEscolha os melhores membros do seu cl� para lutar!'
+  -  '&dEscolha os melhores membros do seu clã para lutar!'
   -  '&aUse &3/glad entrar para participar do gladiador'
 Titulo: '%glad_tag%'
 Subtitulo: '&7Evento gladiador iniciando em &f%glad_timetostart% &7minutos'
@@ -77,13 +78,10 @@ Subtitulo: '&7Evento gladiador iniciando em &f%glad_timetostart% &7minutos'
 Scoreboard:
   -  '&f&lLegionMC | %glad_tag%'
   -  '&bSeu clã: %glad_clan%'
-  -  ''
   -  '&3Suas kills: &7%glad_kills%'
-  -  '&3Membros do cl� restantes:'
-  -  '&d%LastClanPlayers%'
-  -  ''
+  -  '&3Aliados: &d%LastClanPlayers%'
   -  '&6Players vivos: &f%glad_NumPlayers%'
-  -  '&6Cl�s vivos: &f%NumClans%'
+  -  '&6Clãs: &f%NumClans%'
   
   
 # Localiza��es onde os players iniciar�o a luta no gladiador

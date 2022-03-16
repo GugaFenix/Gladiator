@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.main;
 
 import java.util.ArrayList;
@@ -12,8 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.gugafenix.legionmc.glad.commands.Commander;
 import me.gugafenix.legionmc.glad.events.PlayerRemoveEvent;
 import me.gugafenix.legionmc.glad.file.FileManager;
-import me.gugafenix.legionmc.glad.invs.events.onSelectPlayerEvent;
 import me.gugafenix.legionmc.glad.player.GladPlayerManager;
+import me.gugafenix.legionmc.glad.scoreboard.ScoreManager;
 import me.gugafenix.legionmc.glad.spawnselection.SpawnSelectManager;
 import me.gugafenix.legionmc.glad.spawnselection.events.BugOnSelectEvent;
 import me.gugafenix.legionmc.glad.spawnselection.events.PlayerBreakBlock;
@@ -25,12 +28,13 @@ import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 public class Main extends JavaPlugin {
 	
 	private static Main main;
-	public static String tag = "§0§l[§6§lGladiador§0§l]";
+	public static String tag = "§0§l[§6§lGladiador§0§l] ";
 	private static FileManager fileManager;
 	private static API api;
 	private static GladPlayerManager playerManager;
 	private static SpawnSelectManager spawnsManager;
 	private static List<Listener> listeners;
+	private static ScoreManager scoreBoardManager;
 	
 	@Override
 	public void onEnable() {
@@ -41,7 +45,6 @@ public class Main extends JavaPlugin {
 		listeners.add(new PlayerBreakBlock());
 		listeners.add(new PlayerChatEvent());
 		listeners.add(new PlayerPlaceBlock());
-		listeners.add(new onSelectPlayerEvent());
 		listeners.add(new BugOnSelectEvent());
 		registerEvents();
 		
@@ -51,10 +54,14 @@ public class Main extends JavaPlugin {
 		fileManager.loadConfigs();
 		playerManager = new GladPlayerManager();
 		spawnsManager = new SpawnSelectManager();
+		scoreBoardManager = new ScoreManager();
 		saveDefaultConfig();
 		registerMainCommand();
+		
 	}
 	
+	public static ScoreManager getScoreBoardManager() { return scoreBoardManager; }
+
 	private void registerMainCommand() {
 		((CraftServer) Bukkit.getServer()).getCommandMap().register("Gladiator",
 				new Commander().setAliases(Arrays.asList(new String[] { "glad", "gladiator" })));

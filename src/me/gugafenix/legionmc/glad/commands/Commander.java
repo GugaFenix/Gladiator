@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.commands;
 
 import org.bukkit.Sound;
@@ -32,7 +35,6 @@ public class Commander extends Command {
 	@Override
 	public boolean execute(CommandSender sender, String cmd, String[] args) {
 		
-		if (!(sender instanceof Player)) return false;
 		Player p = (Player) sender;
 		
 		if (args.length > 0) {
@@ -51,7 +53,7 @@ public class Commander extends Command {
 				new Create().execute(sender, cmd, args);
 				break;
 			case "join":
-				if (!Gladiator.HasGladRunning()) {
+				if (!Gladiator.hasGladRunning()) {
 					p.sendMessage(Main.tag + " §cNão há nenhum gladiador ocorrendo.");
 					p.playSound(p.getLocation(), Sound.VILLAGER_NO, 10, 10);
 					return false;

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package me.gugafenix.legionmc.glad.spawnselection.events;
 
 import org.bukkit.entity.Player;

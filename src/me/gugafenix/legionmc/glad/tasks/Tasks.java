@@ -1,3 +1,6 @@
+/*
+ *
+ */
 package me.gugafenix.legionmc.glad.tasks;
 
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import me.HClan.Objects.DiscordClan;
 import me.HClan.Objects.Jogador;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.gugafenix.legionmc.glad.border.BorderManager;
@@ -21,7 +25,10 @@ import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.objects.Gladiator.GladiatorStatus;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.player.GladPlayer.SelectionStatus;
+import me.gugafenix.legionmc.glad.scoreboard.ScoreManager;
+import me.gugafenix.legionmc.glad.scoreboard.Scoreboard;
 import me.gugafenix.legionmc.glad.utils.API;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class Tasks {
 	private Gladiator glad;
@@ -29,7 +36,7 @@ public class Tasks {
 	private TaskId id;
 	
 	public enum TaskId {
-		SEND_WARNS, CHECK_SELECTION, START_BATTLE, DEATHMATCH, BORDER;
+		SEND_WARNS, CHECK_SELECTION, START_BATTLE, DEATHMATCH, BORDER, SCOREBOARD_UPDATE;
 	}
 	
 	public Tasks(TaskId id, Gladiator glad) {
@@ -75,15 +82,15 @@ public class Tasks {
 				if (glad.getTimeToStart() > 0) {
 					glad.setTimeToStart(glad.getTimeToStart() - (1));
 				} else {
-					glad.getPlayers().forEach(gps -> gps.setSelectionStatus(SelectionStatus.SELECTING));
+					for (GladPlayer gps : glad.getPlayers()) gps.setSelectionStatus(SelectionStatus.SELECTING);
 					
 					// Warn
-					if (glad.getClans().size() <= 1) {
-						Bukkit.getOnlinePlayers().forEach(all -> {
+					if (glad.getClans().size() < 2) {
+						for (Player all : Bukkit.getOnlinePlayers()) {
 							all.sendMessage(Main.tag + "§9O gladiador foi cancelado por falta de clãs");
 							glad.cancel();
 							this.cancel();
-						});
+						}
 					}
 					
 					glad.setStatus(GladiatorStatus.SELECTING);
@@ -100,10 +107,37 @@ public class Tasks {
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					
 					// Check se o player j§ est§ no gladiador
-					if (Main.getPlayerManager().getPlayer(p) != null) continue;
+					GladPlayer gp = Main.getPlayerManager().getPlayer(p);
+					if (gp != null) {
+						p.sendMessage(Main.tag + "§eO gladiador iniciará em §c" + glad.getTimeToStart() + " §esegundos");
+						p.sendMessage(Main.tag + "§ePense bem se deseja lutar até a morte pois, depois que "
+								+ "a arena for fechada para batalha, você não poderá mas desistir, "
+								+ "por enquanto, para sair do gladiador use §c/glad sair");
+					}
+					
 					p.sendMessage("");
 					if (i == 1) {
 						sendWarn(p);
+						p.sendMessage("§5§lClãs no gladiador");
+						StringBuilder sb = new StringBuilder(glad.getClans().get(0).getTagClan() + ", ");
+						for (int i = 1; i < glad.getClans().size(); i++) {
+							
+							if (i == glad.getClans().size()) {
+								sb.append("§f, " + glad.getClans().get(glad.getClans().size()).getTagClan() + "§f.");
+								break;
+							}
+							sb.append(glad.getClans().get(0).getTagClan() + "§f, ");
+						}
+						
+						p.sendMessage(sb.toString());
+						
+						DiscordClan dc = Jogador.check(p).getClan().getDiscordClan();
+						if (dc != null) {
+							TextChannel channel = dc.getChannelAvisos();
+							dc.sendMessage(channel, dc.getRole().getAsMention() + " **O evento gladiador será iniciado no servidor em "
+									+ glad.getTimeToStart() + " segundos**");
+						}
+						
 						p.sendMessage("");
 						i = glad.getTimeBelowWarns();
 					} else {
@@ -118,7 +152,7 @@ public class Tasks {
 	private BukkitTask runDeathMatchTask() {
 		glad.getWorld().setPVP(false);
 		glad.getDeathMatchWorld().setPVP(false);
-		return setDeathMatch(new BukkitRunnable() {
+		return deathMatch = new BukkitRunnable() {
 			int i = 10;
 			
 			@Override
@@ -137,26 +171,42 @@ public class Tasks {
 					
 				}
 			}
-		}.runTaskTimerAsynchronously(Main.getMain(), 0, 20));
+		}.runTaskTimerAsynchronously(Main.getMain(), 0, 20);
 	}
 	
-	private void sendWarn(Player p) {
-		for (String msg : glad.getWarns()) { p.sendMessage(replace(p, msg)); }
-		API.getApi().sendTitle(replace(p, glad.getTitle()), replace(p, glad.getSubtitle()), p);
-		p.playSound(p.getLocation(), Sound.LEVEL_UP, 10f, 10f);
-		p.playSound(p.getLocation(), Sound.ITEM_PICKUP, 10.1f, 10f);
-		p.playSound(p.getLocation(), Sound.SHEEP_SHEAR, 101f, 10f);
-	}
-	
-	public BukkitTask runSelectionCheckTask() {
+	private BukkitTask runSelectionCheckTask() {
 		glad.setStatus(GladiatorStatus.SELECTING);
+		if (glad.isRandomWarriors()) {
+			for (GladPlayer p : glad.getPlayers()) {
+				for (int o = 0; o < glad.getMaxClanMembers() - 1; o++) {
+					
+					int rand = new Random().nextInt(p.getClan().getOnlinePlayers().size());
+					
+					Player sp = p.getClan().getOnlinePlayers().get(rand);
+					GladPlayer selected = Main.getPlayerManager().getPlayer(sp);
+					
+					while (p.getSelectedPlayers().contains(sp) || glad.getPlayers().contains(selected))
+						rand = new Random().nextInt(p.getClan().getOnlinePlayers().size());
+					
+					sp = p.getClan().getOnlinePlayers().get(rand);
+					selected = Main.getPlayerManager().getPlayer(sp);
+					
+					if (selected == null) selected = new GladPlayer(sp);
+					
+					p.getSelectedPlayers().add(selected.getPlayer());
+					p.getPlayer().sendMessage("§bO jogador §f" + selected.getPlayer().getName() + " §bfoi selecionado");
+				}
+				
+			}
+			
+		}
 		
-		glad.getPlayers().forEach(p -> {
+		for (GladPlayer p : glad.getPlayers()) {
 			p.setSelectionStatus(SelectionStatus.SELECTING);
 			p.getPlayer().sendMessage(Main.tag
 					+ "§bO evento gladiador será iniciado assim que todos os guerreiros estiverem sido selecionados pelos seus líderes, prepare-se para a batalha!");
 			API.getApi().playSound(p.getPlayer(), Sound.ANVIL_USE);
-		});
+		}
 		
 		return checkSelection = new BukkitRunnable() {
 			int i = 0;
@@ -164,7 +214,7 @@ public class Tasks {
 			@Override
 			public void run() {
 				
-				glad.getPlayers().forEach(p -> {
+				for (GladPlayer p : glad.getPlayers()) {
 					
 					// Check se n§o § o lider e se est§ pronto
 					if (p.getClan().getLider() != Jogador.check(p.getPlayer())) return;
@@ -195,17 +245,19 @@ public class Tasks {
 							i = 0;
 						}
 					}
-				});
+				}
 				
 			}
 			
 		}.runTaskTimerAsynchronously(Main.getMain(), 0, 20);
-		
 	}
 	
-	public BukkitTask runStartBattleTask() {
+	private BukkitTask runStartBattleTask() {
 		glad.setStatus(GladiatorStatus.IN_BATTLE);
 		glad.setTimeToStart(10);
+		
+		if (glad.getClans().size() <= glad.getClanAmountToDeathMatch()) return runDeathMatchTask();
+		
 		return startBattle = new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -219,9 +271,15 @@ public class Tasks {
 				} else {
 					
 					for (GladPlayer p : glad.getPlayers()) {
+						
 						// Clear chat
 						for (int j = 0; j < 100; j++) p.getPlayer().sendMessage("");
-						API.getApi().sendTitle("§b§lBatalha iniciada", "§3§lLUTE!", p.getPlayer());
+						
+						p.getPlayer().sendMessage("§e§l§m----§6§l§m--------" + Main.tag + "§6§l§m --------§e§l§m---");
+						p.getPlayer().sendMessage("§3Seu clã desafiou todos os outros à uma batalha");
+						p.getPlayer().sendMessage("§bLute, resista, ajude seus aliados e honre " + p.getClan().getTagClan());
+						p.getPlayer().sendMessage("§6§l§m--------------------------------------");
+						
 						API.getApi().playSound(p.getPlayer(), Sound.EXPLODE);
 						
 						int rand = new Random().nextInt(glad.getSpawnPoints().size());
@@ -234,28 +292,62 @@ public class Tasks {
 					
 					glad.getWorld().setPVP(true);
 					glad.setStartMilis(System.currentTimeMillis());
-					glad.setRunningTask(runBorderUpdateTask());
+					
+					for (GladPlayer gp : glad.getPlayers()) {
+						
+						Scoreboard score = ScoreManager.getManager().getScoreBoard(gp.getPlayer());
+						
+						if (score != null) {
+							score.create();
+							score.update();
+							continue;
+						}
+						
+						score = new Scoreboard(gp.getPlayer(), glad.getScoreboard().get(0));
+						score.create();
+						score.update();
+					}
+					
+					glad.runTask(TaskId.BORDER);
 					this.cancel();
 				}
 			}
 		}.runTaskTimerAsynchronously(Main.getMain(), 0, 20);
 	}
 	
-	public BukkitTask runBorderUpdateTask() {
+	private BukkitTask runBorderUpdateTask() {
 		List<Player> players = new ArrayList<>();
 		for (GladPlayer gps : glad.getPlayers()) players.add(gps.getPlayer());
-		BorderManager bm = glad.getBorder();
+		BorderManager bm = new BorderManager(glad.getWorld(), players, glad);
+		
 		return new BukkitRunnable() {
 			@Override
 			public void run() {
+				
 				List<Player> players = new ArrayList<>();
 				for (GladPlayer gps : glad.getPlayers()) players.add(gps.getPlayer());
 				bm.setPlayers(players);
 				bm.update(glad.getBorderReduction());
 				bm.getPlayers().forEach(p -> p
 						.sendMessage(Main.tag + "§aA borda do gladiador foi diminuída em §f" + glad.getBorderReduction() + " §ablocos"));
+				
+				if (bm.getBorder().getSize() <= 10) {
+					bm.getPlayers().forEach(p -> p.sendMessage(Main.tag + "§3A borda chegou ao seu tamanho mínimo, uma área §f10x10"));
+					this.cancel();
+				}
+				
 			}
-		}.runTaskTimerAsynchronously(Main.getMain(), glad.getTimeToDecreaseBorder(), glad.getTimeToDecreaseBorder());
+		}.runTaskTimerAsynchronously(Main.getMain(), glad.getFinalSize() / (glad.getAllTime() * 20),
+				glad.getFinalSize() / (glad.getAllTime() * 20));
+	}
+	
+	private void sendWarn(Player p) {
+		for (String msg : glad.getWarns()) { p.sendMessage(replace(p, msg)); }
+		API.getApi().sendTitle(replace(p, glad.getTitle()), replace(p, glad.getSubtitle()), p);
+		p.playSound(p.getLocation(), Sound.LEVEL_UP, 10f, 10f);
+		p.playSound(p.getLocation(), Sound.ITEM_PICKUP, 10.1f, 10f);
+		p.playSound(p.getLocation(), Sound.SHEEP_SHEAR, 101f, 10f);
+		
 	}
 	
 	public Location unserialize(String string) {
