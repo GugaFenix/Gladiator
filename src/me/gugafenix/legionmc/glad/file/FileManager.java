@@ -39,9 +39,8 @@ public class FileManager {
 				Main.tag.replace("0", "8") + "§aCarregamento dos presets finalizado em §d" + (System.currentTimeMillis() - milis) + "ms§a!",
 				"");
 		
-		Timer.setTimer(new Timer());
+		new Timer();
 		Timer.getTimer().start();
-		
 	}
 	
 	public File getFile(String name) {

@@ -29,8 +29,8 @@ public class ForceSelection {
 			return;
 		}
 		BukkitTask task = glad.getTaskRunning();
-		if (task == Tasks.getCheckSelection() || glad.getTaskRunning() == null) {
-			p.sendMessage(Main.tag + "§cjá está em seleção");
+		if (task == Tasks.getCheckSelection()) {
+			p.sendMessage(Main.tag + "§cO gladiador já está em processo de seleção");
 			return;
 		}
 		

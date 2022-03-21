@@ -13,7 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.gugafenix.legionmc.glad.commands.Commander;
+import me.gugafenix.legionmc.glad.events.PlayerCauseDamageEvent;
 import me.gugafenix.legionmc.glad.events.PlayerRemoveEvent;
+import me.gugafenix.legionmc.glad.events.ProibitedEventOnGlad;
 import me.gugafenix.legionmc.glad.file.FileManager;
 import me.gugafenix.legionmc.glad.player.GladPlayerManager;
 import me.gugafenix.legionmc.glad.scoreboard.ScoreManager;
@@ -46,6 +48,8 @@ public class Main extends JavaPlugin {
 		listeners.add(new PlayerChatEvent());
 		listeners.add(new PlayerPlaceBlock());
 		listeners.add(new BugOnSelectEvent());
+		listeners.add(new ProibitedEventOnGlad());
+		listeners.add(new PlayerCauseDamageEvent());
 		registerEvents();
 		
 		api = new API();
@@ -61,7 +65,7 @@ public class Main extends JavaPlugin {
 	}
 	
 	public static ScoreManager getScoreBoardManager() { return scoreBoardManager; }
-
+	
 	private void registerMainCommand() {
 		((CraftServer) Bukkit.getServer()).getCommandMap().register("Gladiator",
 				new Commander().setAliases(Arrays.asList(new String[] { "glad", "gladiator" })));

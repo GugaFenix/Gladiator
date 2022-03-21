@@ -90,16 +90,11 @@ public class GladPlayer {
 		if (!glad.getPlayers().contains(this)) return;
 		if (this.isWatching) return;
 		
-		// Warn to glad players
-		glad.getPlayers().forEach(tp -> {
-			tp.getPlayer()
-					.sendMessage("§cO jogador §7" + this.getPlayer().getName() + " " + this.getClan().getTagClan() + " §cfoi eliminado");
-			getPlayer().spigot().respawn();
-			getPlayer().teleport(glad.getCabin().getLocation());
-			if (this.getClan() == tp.getClan()) return;
-			glad.updateInfoFromAll();
-			this.setInGladiator(false);
-		});
+		getPlayer().spigot().respawn();
+		getPlayer().teleport(glad.getCabin().getLocation());
+		glad.updateInfoFromAll();
+		getPlayer().sendMessage(Main.tag + "§aParabéns pela sua batalha honrosa e corajosa, mas infelizmente, você foi eliminado.");
+		this.setInGladiator(false);
 		
 		// Check se o clan foi eliminado
 		for (Clan clans : glad.getClans()) {
@@ -117,9 +112,11 @@ public class GladPlayer {
 				glad.getClans().remove(clans);
 				Bukkit.getOnlinePlayers().forEach(all -> {
 					all.sendMessage(Main.tag + "§bBoletim do gladiador");
+					all.sendMessage("");
 					all.sendMessage("§3Mais um clã perdeu a batalha");
 					all.sendMessage("§aO clã " + clans.getNome() + " foi eliminado do gladiador");
 					all.sendMessage("§eÚiltimo sobrevivente do clã: §f" + this.getPlayer().getName());
+					all.sendMessage("");
 				});
 				
 				continue;
@@ -161,7 +158,7 @@ public class GladPlayer {
 				API.getApi().playSound(all, Sound.ANVIL_BREAK);
 				
 				for (Player cp : clan.getOnlinePlayers()) {
-					cp.teleport(unserialize(glad.getPreset().getConfig().getString("Server.Lobby.localização")));
+					cp.teleport(unserialize(glad.getPreset().getConfig().getString("Lobby")));
 					API.getApi().sendTitle("§b§lPARABÉNS!", "§aVocê foi um dos ganhadores do gladiador", cp);
 					
 					for (ItemStack item : cp.getInventory()) {
@@ -190,16 +187,18 @@ public class GladPlayer {
 	
 	public Location unserialize(String string) {
 		String args[] = string.split(":");
-		Double X = Double.parseDouble(args[0]);
-		Double Y = Double.parseDouble(args[1]);
-		Double Z = Double.parseDouble(args[2]);
+		Double X = Double.parseDouble(args[1]);
+		Double Y = Double.parseDouble(args[2]);
+		Double Z = Double.parseDouble(args[3]);
 		
-		return new Location(Bukkit.getWorld(Gladiator.getGladRunning().getPreset().getConfig().getString("Server.Lobby.mundo")), X, Y, Z);
+		return new Location(Bukkit.getWorld(args[0]), X, Y, Z);
 	}
 	
 	public boolean isArmor(ItemStack item) {
 		String type = item.getType().toString().toUpperCase();
-		if (type.contains("HELMET") || type.contains("CHESTPLATE") || type.contains("LEGGINGS") || type.contains("BOOTS") || type.contains("SWORD")) return true;
+		if (type.contains("HELMET") || type.contains("CHESTPLATE") || type.contains("LEGGINGS") || type.contains("BOOTS")
+				|| type.contains("SWORD"))
+			return true;
 		return false;
 	}
 	

@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
-import me.gugafenix.legionmc.glad.objects.Timer;
 
 public class Reload {
 	
@@ -19,9 +18,6 @@ public class Reload {
 		Main.getFileManager().loadConfigs();
 		if (Gladiator.hasGladRunning()) Gladiator.getGladRunning().cancel();
 		Gladiator.setGladRunning(null);
-		
-		Timer.getTimer().start();
-		
 		sender.sendMessage(Main.tag + "§aO plugin de gladiador foi recarregado com êxito!");
 	}
 	

@@ -28,8 +28,8 @@ public class ForceStart {
 			return;
 		}
 		BukkitTask task = glad.getTaskRunning();
-		if (task == Tasks.getStartBattle() || glad.getTaskRunning() == null) {
-			p.sendMessage(Main.tag + "§cjá está em batalha");
+		if (task == Tasks.getStartBattle()) {
+			p.sendMessage(Main.tag + "§cO gladiador já está em batalha.");
 			return;
 		}
 		

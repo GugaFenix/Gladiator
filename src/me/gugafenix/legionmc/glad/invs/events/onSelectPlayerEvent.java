@@ -38,7 +38,7 @@ public class onSelectPlayerEvent implements Listener {
 		
 		// Verificações para ignorar
 		if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
-		if (!e.getInventory().getTitle().equalsIgnoreCase("§0§l§k!!! §6§lSelecionar Guerreiros §0§l§k!!!")) return;
+		if (!e.getInventory().getTitle().equalsIgnoreCase("§8§lSelecionar Guerreiros")) return;
 		
 		// Evento cancelado
 		e.setCancelled(true);
@@ -99,7 +99,6 @@ public class onSelectPlayerEvent implements Listener {
 				
 				gp.getPlayer().sendMessage(Main.tag
 						+ "§bO evento gladiador será iniciado assim que todos os guerreiros estiverem selecionados por seus líderes, prepare-se para a batalha!");
-				
 			} else if (item.getType() == Material.BARRIER) {
 				
 				name = item.getItemMeta().getDisplayName().replace("§" + item.getItemMeta().getDisplayName().charAt(1), "");

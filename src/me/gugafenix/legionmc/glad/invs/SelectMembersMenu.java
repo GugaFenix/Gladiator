@@ -15,6 +15,8 @@ import org.bukkit.inventory.Inventory;
 import me.HClan.Objects.Jogador;
 import me.HClan.Utils.Item;
 import me.HClan.Utils.SkullCreator;
+import me.gugafenix.legionmc.glad.main.Main;
+import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.utils.API;
 
 public class SelectMembersMenu {
@@ -100,7 +102,7 @@ public class SelectMembersMenu {
 	public static HashMap<Player, Integer> getMap() { return map; }
 	
 	public Inventory createInventory() {
-		setInventory(Bukkit.createInventory(null, 9 * 6, "§0§l§k!!! §6§lSelecionar Guerreiros §0§l§k!!!"));
+		setInventory(Bukkit.createInventory(null, 9 * 6, "§8§lSelecionar Guerreiros"));
 		return this.inventory;
 	}
 	

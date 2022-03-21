@@ -28,9 +28,10 @@ public class ForceDeathMatch {
 			p.sendMessage(Main.tag + "§cO servidor não possui nenhum gladiador ocorrendo");
 			return;
 		}
+		
 		BukkitTask task = glad.getTaskRunning();
-		if (task == Tasks.getDeathMatch()|| glad.getTaskRunning() == null) {
-			p.sendMessage(Main.tag + "§cO gladiador está iniciando ou já está em batalha");
+		if (task == Tasks.getDeathMatch()) {
+			p.sendMessage(Main.tag + "§cO gladiador já está em death match");
 			return;
 		}
 		

@@ -20,22 +20,23 @@ public class PlayerRemoveEvent implements Listener {
 	void onPlayerDeathEvent(PlayerDeathEvent e) {
 		Player d = e.getEntity();
 		Player p = e.getEntity().getKiller();
-		GladPlayer gpm = Main.getPlayerManager().getPlayer(p);
-		GladPlayer gpk = Main.getPlayerManager().getPlayer(d);
+		GladPlayer gpm = Main.getPlayerManager().getPlayer(d);
+		GladPlayer gpk = Main.getPlayerManager().getPlayer(p);
 		Gladiator glad = Gladiator.getGladRunning();
 		
 		if (glad == null) return;
 		if (gpm == null || !gpm.isInGladiator()) return;
 		
-		e.setDeathMessage(null);
-		gpk.updateInfos();
+		if (d.getKiller() == null) e.setDeathMessage("§cO jogador §7" + d.getPlayerListName() + " §cfoi eliminado do gladiador");
+		else {
+			gpk.setKills(gpk.getKills() + 1);
+			e.setDeathMessage("§cO jogador §7" + d.getPlayerListName() + " §cfoi eliminado do gladiador por §7" + p.getPlayerListName());
+		}
+		
 		gpm.deleteFromGladiator(glad);
 		glad.updateInfoFromAll();
 		Scoreboard score = ScoreManager.getManager().getScoreBoard(p);
-		
 		if (score != null) {
-			score.destroy();
-			
 			for (GladPlayer gp : glad.getPlayers()) {
 				Player pl = gp.getPlayer();
 				score = ScoreManager.getManager().getScoreBoard(pl.getName());

@@ -27,7 +27,7 @@ public class Gladiator {
 	private World world, DeathMatchWorld;
 	private List<Clan> clans;
 	private File preset;
-	private int borderReduction, clanAmountToDeathMatch, timeToStart, PlayerAmount;
+	private int clanAmountToDeathMatch, timeToStart, PlayerAmount;
 	private List<String> warns, scoreboard;
 	private int timeBelowWarns;
 	private String title, subtitle;
@@ -48,6 +48,9 @@ public class Gladiator {
 	private int startSize;
 	private int borderDamage;
 	private int finalSize;
+	private Tasks taskExecutor;
+	private int timeToStartBorder;
+	private int timeToAgroup;
 	
 	public static enum GladiatorStatus {
 		WARNING, IN_BATTLE, SELECTING, LOCKED, DEATH_MATCH;
@@ -73,10 +76,11 @@ public class Gladiator {
 		this.timeToStart = config.getInt("Evento.TempoParaIniciar");
 		this.timeBelowWarns = config.getInt("Evento.TempoEntreAvisos");
 		this.spawnPoints = (List<String>) config.getList("Spawns");
+		this.timeToAgroup = config.getInt("Evento.TempoParaAgrupar");
 		/*
 		 * DeathMatch
 		 */
-		this.clanAmountToDeathMatch = config.getInt("DeathMatch.QuantidadeDeClãs");
+		this.clanAmountToDeathMatch = config.getInt("DeathMatch.NumClãs");
 		this.DeathMatchWorld = Bukkit.getWorld(config.getString("DeathMatch.Mundo"));
 		/*
 		 * Messages
@@ -89,9 +93,7 @@ public class Gladiator {
 		 * Clan configs
 		 */
 		this.maxClanMembers = config.getInt("Clan.MaxMembros");
-		this.minClanKDR = config.getInt("Clan.MinKDR");
 		this.minClanMoney = config.getInt("Clan.MinDinheiro");
-		this.minClanMembers = config.getInt("Clan.MinMembros");
 		
 		/*
 		 * Camarote
@@ -101,12 +103,18 @@ public class Gladiator {
 		this.startSize = config.getInt("Borda.Tamanho.Inicio");
 		this.finalSize = config.getInt("Borda.Tamanho.Final");
 		this.borderDamage = config.getInt("Borda.Dano");
-		this.allTime = config.getInt("Borda.Tamanho.TempoTotal");;
+		this.allTime = config.getInt("Borda.Tamanho.TempoTotal");
+		this.timeToStartBorder = config.getInt("Borda.TempoParaIniciarRedução");
+		
+		createTaskExecutor();
 	}
+	
+	private void createTaskExecutor() { this.taskExecutor = new Tasks(TaskId.SEND_WARNS, this); }
 	
 	public void runTask(TaskId id) {
 		if (runningTask != null) runningTask.cancel();
-		this.runningTask = new Tasks(id, this).start();
+		taskExecutor.start(id);
+		this.runningTask = Tasks.getTaskById(id);
 	}
 	
 	public void setRunningTask(BukkitTask runningTask) { this.runningTask = runningTask; }
@@ -148,10 +156,6 @@ public class Gladiator {
 	public File getPreset() { return preset; }
 	
 	public void setPreset(File preset) { this.preset = preset; }
-	
-	public int getBorderReduction() { return borderReduction; }
-	
-	public void setBorderReduction(int borderReduction) { this.borderReduction = borderReduction; }
 	
 	public int getFinalSize() { return finalSize; }
 	
@@ -257,5 +261,11 @@ public class Gladiator {
 	public boolean isRandomWarriors() { return randomWarriors; }
 	
 	public void setRandomWarriors(boolean randomWarriors) { this.randomWarriors = randomWarriors; }
+
+	public int getTimeToStartBorder() {
+	return timeToStartBorder; }
+
+	public int getTimeToAgroup() {
+	return timeToAgroup; }
 	
 }

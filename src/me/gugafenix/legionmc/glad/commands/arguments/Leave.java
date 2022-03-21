@@ -13,6 +13,7 @@ import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Confirmation;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
+import me.gugafenix.legionmc.glad.tasks.Tasks;
 import me.gugafenix.legionmc.glad.utils.API;
 
 public class Leave {
@@ -33,6 +34,11 @@ public class Leave {
 			p.sendMessage(Main.tag + "§cVocê não está participando do gladiador");
 			API.getApi().playSound(p, Sound.VILLAGER_NO);
 			return;
+		}
+		
+		if(glad.getTaskRunning() != Tasks.getWarnsTask() || glad.getTaskRunning() != Tasks.getCheckSelection()) {
+			p.sendMessage(Main.tag + "§cO gladiador já está fechado para saídas, agora, sua única chance de sair vivo dessa é lutar.");
+			API.getApi().playSound(p, Sound.VILLAGER_NO);
 		}
 		
 		if (!map.containsKey(p.getName())) {

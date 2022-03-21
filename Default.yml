@@ -4,30 +4,33 @@
 # ______________ Vari�veis ______________
 
 # %glad_tag% Prefixo do plugin
-# %glad_clan% Exibe a tag do cl� do jogador
-# %glad_timetostart% Tempo restante para o in�cio do evento
-# %glad_NumCl�s% N�mero de cl�s no evento
-# %glad_Clans% Lista dos cl�s no evento
-# %glad_NumPlayers% N�mero de players no evento
-# %glad_TimeToDeathMatch% Tempo restante at� o deathmatch
-# %glad_enemies% Quantidade de cl�s inimigos
-# %glad_kills% N�mero de kills do player
-# %glad_LasClanPlayers% Quantidade de players restantes do pr�prio cl�
+# %glad_clan% Exibe a tag do clã do jogador
+# %glad_timetostart% Tempo restante para o início do evento
+# %glad_NumClãs% Número de clãs no evento
+# %glad_Clans% Lista dos clãs no evento
+# %glad_NumPlayers% Número de players no evento
+# %glad_TimeToDeathMatch% Tempo restante até o deathmatch
+# %glad_enemies% Quantidade de clãs inimigos
+# %glad_kills% Número de kills do player
+# %glad_LasClanPlayers% Quantidade de players restantes do próprio clã
 
 # Este preset será instanciado para iniciar um gladiador automáticamente?
 # OBS: Apenas um preset pode ser definido como true
 AutoStart: false
-EspacoEntreGladiadores: '7d'
+AutoStartSpace: '7d'
+
+Lobby: 'world:0:100:0'
 
 # Configurações do evento
 # Mundo -> Mundo em que o evento ocorrerá
-# TempoParaIniciar -> Tempo desde o primeiro aviso at� o in�cio do evento
+# TempoParaIniciar -> Tempo desde o primeiro aviso até o início do evento
 # NumAvisos -> Quantidade de avisos qoe serão exibidos até o evento iniciar
 # SeleçãoAleatória -> Caso true, Os players que participarão do gladiador serão aleatórios
 Evento:
   Mundo: 'World'
   TempoParaIniciar: 30
   TempoEntreAvisos: 1
+  TempoParaAgrupar: 30
   SeleçãoAleatória: false
 
 Camarote: '100:100:100'
@@ -36,11 +39,12 @@ DeathMatch:
   NumPlayers: 5
   NumClãs: 3
   Mundo: 'World'
+  Spawn: '0:100:0'
     
     
 # Configurações da borda
 # Inicio -> Tamanho inicial da borda
-# Redução -> Quantidade de blocos que a borda reduzir� ap�s o tempo definido
+# Redução -> Quantidade de blocos que a borda reduzirá após o tempo definido
 # TempoTotal -> Em quantos minutos a borda chegará ao seu tamanho mínimo?
 # Centro -> Coordenadas do centro da borda
 Borda:
@@ -48,15 +52,16 @@ Borda:
   Tamanho:
     Inicio: 100
     Final: 10
-    TempoTotal: 10
+    TempoTotal: 600
+  TempoParaIniciarRedução: 30
   Centro:
     X: 0
     Z: 0
     
     
-# Configura��es dos cl�s participantes
-# MaxMembros -> M�ximo de participantes por cl�
-# MinDinheiro -> M�nimo de dinheiro no banco do cl�
+# Configurações dos clãs participantes
+# MaxMembros -> Máximo de participantes por clã
+# MinDinheiro -> Mínimo de dinheiro no banco do clã
 Clan:
   MaxMembros: 20
   MinDinehiro: 20000
@@ -64,29 +69,32 @@ Clan:
 # Mensagem de aviso    
 # Titulo -> T�tulo que ser� enviado ao player juntamente ao Subt�tulo
 Aviso: 
-  -  '%glad_tag%'
-  -  '&bEvento gladiador iniciando...'
-  -  '&dEscolha os melhores membros do seu clã para lutar!'
-  -  '&aUse &3/glad entrar para participar do gladiador'
+  - '%glad_tag%'
+  - '&bEvento gladiador iniciando...'
+  - '&dEscolha os melhores membros do seu clã para lutar!'
+  - '&aUse &3/glad entrar para participar do gladiador'
 Titulo: '%glad_tag%'
 Subtitulo: '&7Evento gladiador iniciando em &f%glad_timetostart% &7minutos'
 
-# Configura��o da scoreboard
-#______________________________________________
-# OBSERVA��O -> S�O PERMITIDAS APENAS 16 LINHAS
-#______________________________________________
+# Configuração da scoreboard
+#________________________________________________________________________
+# OBSERVAÇÃO -> S�O PERMITIDAS APENAS 16 LINHAS E 36 CARACTERES POR LINHA
+#________________________________________________________________________
 Scoreboard:
-  -  '&f&lLegionMC | %glad_tag%'
-  -  '&bSeu clã: %glad_clan%'
-  -  '&3Suas kills: &7%glad_kills%'
-  -  '&3Aliados: &d%LastClanPlayers%'
-  -  '&6Players vivos: &f%glad_NumPlayers%'
-  -  '&6Clãs: &f%NumClans%'
+  - '%glad_tag%'
+  - ''
+  - '&3Clã: &b%glad_clan%'
+  - '&5Abates: &d%glad_kills%'
+  - '&2Aliados: &a%glad_LastClanPlayers%'
+  - '&6Vivos: &e%glad_NumPlayers%'
+  - '&7Clãs: &f%glad_NumClans%'
+  - '&4mc.legionmc.net'
   
   
-# Localiza��es onde os players iniciar�o a luta no gladiador
-# Preset ->   -  'X:Y:Z'
+# Localizações onde os players iniciar�o a luta no gladiador
+# Preset:
+# - 'x:y:z'
 Spawns:
-  -  '0:100:0'
+  - '0:100:0'
   
   

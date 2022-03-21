@@ -24,7 +24,8 @@ public class PlaceHolder extends PlaceholderExpansion {
 	
 	@Override
 	public String onPlaceholderRequest(Player p, String params) {
-		Jogador player = new Jogador(p.getName());
+		Jogador player = Jogador.check(p);
+		if (player == null) player = new Jogador(p.getName());
 		String string = params.replace("&", "�");
 		
 		if (Gladiator.hasGladRunning()) {
@@ -47,14 +48,13 @@ public class PlaceHolder extends PlaceholderExpansion {
 				for (Clan clan : Gladiator.getGladRunning().getClans()) clans += clan.getTagClan();
 				return clans;
 				
-			} else if (params.toLowerCase().equalsIgnoreCase("numplayers")) return String.valueOf(Gladiator.getGladRunning().getPlayers());
+			} else if (params.toLowerCase().equalsIgnoreCase("numplayers")) return String.valueOf(Gladiator.getGladRunning().getPlayers().size());
 			
 			else if (params.toLowerCase().equalsIgnoreCase("enemies"))
 				return String.valueOf(Main.getPlayerManager().getPlayer(p).getEnemies());
 			else if (params.toLowerCase().equalsIgnoreCase("kills")) return String.valueOf(Main.getPlayerManager().getPlayer(p).getKills());
 			else if (params.toLowerCase().equalsIgnoreCase("lastclanplayers"))
 				return String.valueOf(Main.getPlayerManager().getPlayer(p).getAllies());
-			
 		} else {
 			
 			if (params.toLowerCase().equalsIgnoreCase("tag")) return Main.tag;

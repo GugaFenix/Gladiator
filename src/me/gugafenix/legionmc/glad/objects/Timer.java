@@ -15,7 +15,6 @@ import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
 public class Timer {
 	
 	private Gladiator gladRunning;
-	private char timeType;
 	private BukkitTask runnable;
 	public static Timer timer;
 	
@@ -30,8 +29,9 @@ public class Timer {
 	}
 	
 	private int getTime() {
-		String str = getAutoStartFile().getConfig().getString("EspacoEntreGladiadores");
-		int space = Integer.valueOf(str.replace(str.charAt(str.length() - 1) + "", ""));
+		String str = getAutoStartFile().getConfig().getString("AutoStartSpace");
+		int space = Integer.valueOf(str.replace(getTimeType() + "", ""));
+		
 		switch (getTimeType()) {
 		case 's':
 			return space * 20;
@@ -47,8 +47,8 @@ public class Timer {
 	}
 	
 	private char getTimeType() {
-		String str = getAutoStartFile().getConfig().getString("EspacoEntreGladiadores");
-		return this.timeType = str.toCharArray()[str.length() - 1];
+		String str = getAutoStartFile().getConfig().getString("AutoStartSpace");
+		return str.toCharArray()[str.length() - 1];
 	}
 	
 	public void start() {
@@ -70,7 +70,7 @@ public class Timer {
 				if (Gladiator.hasGladRunning()) {
 					Main.getMain().log("", Main.tag
 							+ "§cO gladiador programado para ser auto-iniciado não pode realizar tal ação por já haver um gladiador em andamento.",
-							"§6Para reiniciar o timer, basta reiniciar o plugin", "");
+							"§6Para reiniciar o timer, basta recarregar o plugin", "");
 					this.cancel();
 					return;
 				}

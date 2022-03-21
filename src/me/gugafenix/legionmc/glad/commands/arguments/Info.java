@@ -37,6 +37,9 @@ public class Info {
 	}
 	
 	private String[] getBestClan(Gladiator glad) {
+		
+		if (glad.getClans().size() <= 1) return new String[] { glad.getClans().get(0).getTagClan(), glad.getClans().get(0).getTagClan() };
+		
 		HashMap<Clan, Integer> killMap = new HashMap<>();
 		HashMap<Clan, Integer> memberMap = new HashMap<>();
 		
@@ -78,10 +81,9 @@ public class Info {
 	
 	private String getDurationTime(Gladiator glad) {
 		long miliSeconds = glad.getStartMilis() - System.currentTimeMillis();
-		long seconds = miliSeconds * 100;
+		long seconds = miliSeconds * 1000;
 		long minutes = seconds * 60;
 		long hours = minutes * 60;
-		
 		if (hours >= 1) return hours + " horas";
 		if (minutes >= 1) return minutes + " minutos";
 		return seconds + " segundos";

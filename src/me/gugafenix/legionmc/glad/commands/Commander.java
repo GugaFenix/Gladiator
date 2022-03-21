@@ -91,7 +91,7 @@ public class Commander extends Command {
 				break;
 			case "setspawnpoints":
 				if (args.length != 2) {
-					p.sendMessage("§cUse /glad setspawnpoints <preset>");
+					p.sendMessage("§cUse /glad setspawns <preset>");
 					return false;
 				}
 				new SetSpawnPoints().execute(p, cmd, args);
@@ -132,6 +132,8 @@ public class Commander extends Command {
 		else if (arg.equalsIgnoreCase("assistir") || arg.equalsIgnoreCase("camarote")) return "watch";
 		else if (arg.equalsIgnoreCase("kickar") || arg.equalsIgnoreCase("remover")) return "kick";
 		else if (arg.equalsIgnoreCase("info")) return "log";
+		else if (arg.equalsIgnoreCase("setspawns")) return "setspawnpoints";
+		else if (arg.equalsIgnoreCase("recarregar") || arg.equalsIgnoreCase("rl")) return "reload";
 		else return arg.toLowerCase();
 	}
 	

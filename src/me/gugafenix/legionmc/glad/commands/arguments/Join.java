@@ -69,15 +69,12 @@ public class Join {
 		}
 		
 		// Manda o player pro gladiador
-		p.sendMessage(Main.tag
+		if (!glad.isRandomWarriors()) p.sendMessage(Main.tag
 				+ "§bEm alguns segundos, o processo de seleção de guereiros iniciará, prepare-se e prepare seus membros para isto.");
 		gp.setInGladiator(true);
 		if (!glad.getClans().contains(gp.getClan())) glad.getClans().add(gp.getClan());
 		glad.getPlayers().add(gp);
 		glad.updateInfoFromAll();
-		
-//		new GladBoard(glad.getScoreboard().get(0), glad.getScoreboard().subList(1, glad.getScoreboard().size() - 1)).create(p);
-		
 		return true;
 		
 	}

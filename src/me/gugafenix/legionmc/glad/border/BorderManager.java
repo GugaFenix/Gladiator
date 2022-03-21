@@ -1,6 +1,5 @@
 package me.gugafenix.legionmc.glad.border;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -8,7 +7,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldBorder;
@@ -39,47 +37,22 @@ public class BorderManager {
 		border.setSize(getGlad().getStartSize());
 		FileConfiguration config = glad.getPreset().getConfig();
 		border.setCenter(config.getInt("Borda.Centro.X"), config.getInt("Borda.Centro.Z"));
+		border.setDamageAmount(config.getInt("Borda.Dano"));
 		border.setWarningDistance(3);
 		sendBorderPacket();
 	}
 	
-	public void update(int less) {
+	public void update(float less) {
+		
 		remove();
 		border = new WorldBorder();
 		FileConfiguration config = glad.getPreset().getConfig();
+		border.setDamageAmount(config.getInt("Borda.Dano"));
 		border.setCenter(config.getInt("Borda.Centro.X"), config.getInt("Borda.Centro.Z"));
 		border.setSize(lastBorder.getSize() - less);
 		border.setWarningDistance(5);
 		border.setDamageAmount(glad.getBorderDamage());
-		
-		for (Player p : world.getPlayers()) {
-			
-			List<Location> locs = new ArrayList<>();
-			
-			center = new Location(world, border.getCenterX(), 1, border.getCenterZ());
-			Location loc = center.subtract(center.getBlockX() - border.getSize(), 0, 0);
-			int iX = loc.getBlockX();
-			loc = center.subtract(0, 0, center.getBlockZ() - border.getSize());
-			int iZ = loc.getBlockZ();
-			loc = center.add(center.getBlockX() + border.getSize(), 0, 0);
-			int fX = loc.getBlockX();
-			loc = center.add(0, 0, center.getBlockZ() + border.getSize());
-			int fZ = loc.getBlockZ();
-			
-			while (iX < fX) {
-				while (iZ < fZ) {
-					loc = new Location(world, iX, 0, iZ);
-					locs.add(loc);
-					iZ++;
-				}
-				iX++;
-			}
-			
-			if (locs.contains(p.getLocation())) p.setVelocity(new Vector(0.5, 0, 0.5));
-		}
-		
 		sendBorderPacket();
-		
 	}
 	
 	private void remove() {
