@@ -65,12 +65,13 @@ public class Info {
 		TreeMap<Clan, Integer> tree = new TreeMap<>(vcp);
 		
 		String bestKiller = tree.firstKey().getTagClan();
-		
+		if (bestKiller == null) bestKiller = "Uknow Clan";
 		tree.clear();
 		
 		vcp = new ValueComparator(memberMap);
 		tree = new TreeMap<>(vcp);
 		String moreMembers = tree.firstKey().getTagClan();
+		if (moreMembers == null) moreMembers = "Uknow Clan";
 		
 		tree.clear();
 		killMap.clear();
@@ -80,7 +81,7 @@ public class Info {
 	}
 	
 	private String getDurationTime(Gladiator glad) {
-		long miliSeconds = glad.getStartMilis() - System.currentTimeMillis();
+		long miliSeconds = System.currentTimeMillis() - glad.getStartMilis();
 		long seconds = miliSeconds * 1000;
 		long minutes = seconds * 60;
 		long hours = minutes * 60;

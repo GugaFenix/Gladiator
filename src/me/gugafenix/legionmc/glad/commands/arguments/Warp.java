@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class Warp {
 	
@@ -16,7 +18,7 @@ public class Warp {
 		Gladiator glad = Gladiator.getGladRunning();
 		
 		if (!p.hasPermission("*")) {
-			p.sendMessage("§cVocê não tem permissão para isto");
+			p.sendMessage(PlaceHolder.replace(p, Messages.permission));
 			return;
 		}
 		

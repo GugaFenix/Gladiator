@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import me.HClan.Objects.Clan;
 import me.HClan.Objects.Jogador;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
@@ -48,7 +49,8 @@ public class PlaceHolder extends PlaceholderExpansion {
 				for (Clan clan : Gladiator.getGladRunning().getClans()) clans += clan.getTagClan();
 				return clans;
 				
-			} else if (params.toLowerCase().equalsIgnoreCase("numplayers")) return String.valueOf(Gladiator.getGladRunning().getPlayers().size());
+			} else if (params.toLowerCase().equalsIgnoreCase("numplayers"))
+				return String.valueOf(Gladiator.getGladRunning().getPlayers().size());
 			
 			else if (params.toLowerCase().equalsIgnoreCase("enemies"))
 				return String.valueOf(Main.getPlayerManager().getPlayer(p).getEnemies());
@@ -72,5 +74,7 @@ public class PlaceHolder extends PlaceholderExpansion {
 		}
 		return string;
 	}
+	
+	public static String replace(Player p, String string) { return PlaceholderAPI.setPlaceholders(p, string); }
 	
 }

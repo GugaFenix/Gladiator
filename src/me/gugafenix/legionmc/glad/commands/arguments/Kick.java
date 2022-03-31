@@ -11,6 +11,8 @@ import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.utils.API;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class Kick {
 	
@@ -19,7 +21,7 @@ public class Kick {
 		GladPlayer gp = Main.getPlayerManager().getPlayer(p);
 		
 		if (!p.hasPermission("*")) {
-			p.sendMessage("§cVocê não tem permissão para isto");
+			p.sendMessage(PlaceHolder.replace(p, Messages.permission));
 			return;
 		}
 		
@@ -39,7 +41,7 @@ public class Kick {
 		}
 		
 		String cause;
-		if (args[2] != null)
+		if (args.length > 2)
 			cause = args[2].toLowerCase().replace(String.valueOf(args[2].charAt(0)), String.valueOf(args[2].charAt(0)).toUpperCase());
 		else cause = "Não especificado";
 		

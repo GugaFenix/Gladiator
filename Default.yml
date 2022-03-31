@@ -32,15 +32,14 @@ Evento:
   TempoEntreAvisos: 1
   TempoParaAgrupar: 30
   SeleçãoAleatória: false
+  TempoParaPrint: 30
 
 Camarote: '100:100:100'
   
 DeathMatch:
-  NumPlayers: 5
   NumClãs: 3
   Mundo: 'World'
   Spawn: '0:100:0'
-    
     
 # Configurações da borda
 # Inicio -> Tamanho inicial da borda
@@ -48,15 +47,23 @@ DeathMatch:
 # TempoTotal -> Em quantos minutos a borda chegará ao seu tamanho mínimo?
 # Centro -> Coordenadas do centro da borda
 Borda:
-  Dano: 10
-  Tamanho:
-    Inicio: 100
-    Final: 10
-    TempoTotal: 600
-  TempoParaIniciarRedução: 30
-  Centro:
-    X: 0
-    Z: 0
+  Arena:
+    Ativada: true
+    Dano: 10
+    Tamanho:
+      Inicio: 100
+      Final: 10
+      TempoTotal: 100
+    TempoParaIniciarRedução: 30
+    Centro: '0:0:0'
+  DeathMatch:
+    Ativada: false
+    Dano: 10
+    Tamanho:
+      Inicio: 100
+      Final: 10
+      TempoTotal: 100
+    Centro: '0:0:0'
     
     
 # Configurações dos clãs participantes

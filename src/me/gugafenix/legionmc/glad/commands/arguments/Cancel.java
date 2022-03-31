@@ -10,13 +10,15 @@ import org.bukkit.entity.Player;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.utils.API;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class Cancel {
 	
 	public void execute(Player p, String cmd, String[] args) {
 		
 		if (!p.hasPermission("*")) {
-			p.sendMessage("§cVocê não tem permissão para isto");
+			p.sendMessage(PlaceHolder.replace(p, Messages.permission));
 			return;
 		}
 		
@@ -27,9 +29,8 @@ public class Cancel {
 		}
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			player.sendMessage(Main.tag + "§cO evento gladiador foi cancelado!");
+			player.sendMessage(PlaceHolder.replace(p, Messages.cancelled));
 			API.getApi().playSound(player, Sound.ENDERDRAGON_GROWL);
-			API.getApi().sendTitle(Main.tag, "§b§lSE LIGA NO CHAT", player);
 		}
 		
 		Gladiator.getGladRunning().cancel();

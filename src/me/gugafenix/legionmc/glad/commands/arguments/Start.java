@@ -6,19 +6,21 @@ package me.gugafenix.legionmc.glad.commands.arguments;
 import java.io.File;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class Start {
 	
 	public void execute(CommandSender sender, String cmd, String[] args) {
 		
-		
 		// N�o tem permiss�o
 		if (!sender.hasPermission("*")) {
-			sender.sendMessage(Main.tag + "§cVocê não tem permissão para isto.");
+			sender.sendMessage(PlaceHolder.replace((Player) sender, Messages.permission));
 			return;
 		}
 		

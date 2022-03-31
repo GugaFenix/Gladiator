@@ -6,9 +6,9 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/JavaProjects/Minecraft Servers/1.8.8/Spigot.jar"/>
-	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/JavaProjects/Minecraft Servers/1.8.8/plugins/H_Clan.jar"/>
-	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/JavaProjects/Minecraft Servers/1.8.8/plugins/PlaceholderAPI-2.10.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/JavaProjects/Minecraft Servers/1.8.8/plugins/Spigot_JDA_v0.1.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/Java Projects/Minecraft Servers/1.8.8/Spigot.jar"/>
+	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/Java Projects/Minecraft Servers/1.8.8/plugins/PlaceholderAPI-2.11.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/Java Projects/Minecraft Servers/1.8.8/plugins/H_Clan.jar"/>
+	<classpathentry kind="lib" path="C:/Users/GugaF/Desktop/Java Projects/Minecraft Servers/1.8.8/plugins/JDASpigot.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

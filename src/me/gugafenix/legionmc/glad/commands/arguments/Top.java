@@ -12,6 +12,8 @@ import me.HClan.MenuPodio.menuTopClansGladiadores;
 import me.HClan.Objects.Clan;
 import me.HClan.Objects.Jogador;
 import me.gugafenix.legionmc.glad.main.Main;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class Top {
 	
@@ -35,6 +37,12 @@ public class Top {
 			p.sendMessage("§b/top §f- §bAbre o menu do top gladiador");
 			break;
 		case "reset":
+			
+			if (!p.hasPermission("*")) {
+				p.sendMessage(PlaceHolder.replace(p, Messages.permission));
+				return;
+			}
+			
 			menuTopClansGladiadores.get().setTop(new ArrayList<Clan>());
 			p.sendMessage("§5Top gladiadores resetado!");
 			break;

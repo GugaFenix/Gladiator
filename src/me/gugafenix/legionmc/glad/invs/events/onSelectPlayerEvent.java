@@ -38,10 +38,7 @@ public class onSelectPlayerEvent implements Listener {
 		
 		// Verificações para ignorar
 		if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
-		if (!e.getInventory().getTitle().equalsIgnoreCase("§8§lSelecionar Guerreiros")) return;
-		
-		// Evento cancelado
-		e.setCancelled(true);
+		if (e.getInventory().getTitle().equalsIgnoreCase("§8§lSelecionar Guerreiros")) e.setCancelled(true);
 		
 		if (e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().hasDisplayName()) {
 			// Vars

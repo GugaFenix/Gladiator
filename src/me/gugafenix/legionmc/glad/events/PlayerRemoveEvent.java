@@ -3,6 +3,7 @@
  */
 package me.gugafenix.legionmc.glad.events;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +14,8 @@ import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.scoreboard.ScoreManager;
 import me.gugafenix.legionmc.glad.scoreboard.Scoreboard;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class PlayerRemoveEvent implements Listener {
 	
@@ -27,14 +30,23 @@ public class PlayerRemoveEvent implements Listener {
 		if (glad == null) return;
 		if (gpm == null || !gpm.isInGladiator()) return;
 		
-		if (d.getKiller() == null) e.setDeathMessage("§cO jogador §7" + d.getPlayerListName() + " §cfoi eliminado do gladiador");
-		else {
+		e.setDeathMessage(null);
+		
+		if (d.getKiller() == null) {
+			for (Player pl : Bukkit.getOnlinePlayers())
+				pl.sendMessage(PlaceHolder.replace(pl, Messages.suicide.replace("%dead%", d.getName())));
+		} else {
 			gpk.setKills(gpk.getKills() + 1);
-			e.setDeathMessage("§cO jogador §7" + d.getPlayerListName() + " §cfoi eliminado do gladiador por §7" + p.getPlayerListName());
+			for (Player pl : Bukkit.getOnlinePlayers())
+				pl.sendMessage(PlaceHolder.replace(pl, Messages.suicide.replace("%dead%", d.getName()).replace("%killer%", p.getName())));
 		}
 		
 		gpm.deleteFromGladiator(glad);
 		glad.updateInfoFromAll();
+		
+		d.spigot().respawn();
+		d.teleport(glad.getCabin().getLocation());
+		
 		Scoreboard score = ScoreManager.getManager().getScoreBoard(p);
 		if (score != null) {
 			for (GladPlayer gp : glad.getPlayers()) {

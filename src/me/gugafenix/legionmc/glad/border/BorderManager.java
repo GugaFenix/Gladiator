@@ -30,25 +30,27 @@ public class BorderManager {
 		this.world = world;
 		this.border = new WorldBorder();
 		this.lastBorder = null;
-		create();
+		
+		if (world == glad.getWorld()) create("Arena");
+		else create("DeathMatch");
 	}
 	
-	public void create() {
+	public void create(String ag) {
 		border.setSize(getGlad().getStartSize());
 		FileConfiguration config = glad.getPreset().getConfig();
-		border.setCenter(config.getInt("Borda.Centro.X"), config.getInt("Borda.Centro.Z"));
-		border.setDamageAmount(config.getInt("Borda.Dano"));
+		border.setCenter(config.getInt("Borda." + ag + ".Centro.X"), config.getInt("Borda." + ag + ".Centro.Z"));
+		border.setDamageAmount(config.getInt("Borda." + ag + ".Dano"));
 		border.setWarningDistance(3);
 		sendBorderPacket();
 	}
 	
-	public void update(float less) {
+	public void update(float less, String ag) {
 		
 		remove();
 		border = new WorldBorder();
 		FileConfiguration config = glad.getPreset().getConfig();
-		border.setDamageAmount(config.getInt("Borda.Dano"));
-		border.setCenter(config.getInt("Borda.Centro.X"), config.getInt("Borda.Centro.Z"));
+		border.setDamageAmount(config.getInt("Borda." + ag + ".Dano"));
+		border.setCenter(config.getInt("Borda." + ag + ".Centro.X"), config.getInt("Borda." + ag + ".Centro.Z"));
 		border.setSize(lastBorder.getSize() - less);
 		border.setWarningDistance(5);
 		border.setDamageAmount(glad.getBorderDamage());

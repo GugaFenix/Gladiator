@@ -19,6 +19,41 @@
 
 ComandosPermitidos:
   - 'ping'
-  - 'glad sair'
   - 'glad info'
+  
+Messages:
+  NoPermission: '%glad_tag% &cVocê não possúi permissão para isto'
+  Join: '%glad_tag% &aVocê entrou numa guerra densa, batalhe até a morte'
+  GladCancelled: '%glad_tag% &cO gladiador foi cancelado'
+  BorderWarn: '%glad_tag% &5Em &f%timetostartborder% &5a borda começará a ser reduzida'
+  Killed: '&cO jogador &f%dead% foi morto em batalha por &7%killer%'
+  Suicide: '&cO jogador &f%dead% foi eliminado'
+  DeathMatch: '&eA morte súbita será iniciada em alguns segundos, prepare-se para a verdadeira guerra!'
+  BeforeStart:
+    - '%glad_tag% &ePense bem se quer mesmo travar uma batalha até a morte'
+    - '&eSe estiver com medo, basta usar o comando &c/glad sair'
+    - '&eCaso contrário, aguarde a batalha iniciar em &c%glad_timetostart% &esegundos'
+  GladStarted:
+   - '&6&m&l------'
+   - '&f&lLegion MC | %glad_tag%'
+   - ''
+   - '&aPrepare-se para uma luta até a morte'
+   - '&bSe projeta, se alie, resista e vença!'
+   - '&6&m&l------'
+  ClanKilled: 
+    - ''
+    - '%glad_tag%'
+    - '&7O Clã &f%clan% &3foi eliminado'
+    - '&3Ultimo sobrevivente: &b%last_member%'
+    - '&4Abates do clã: &c%kills%'
+    - ''
+  Victory:
+    - ''
+    - '%glad_tag%'
+    - '&eO gladiador foi finalizado!'
+    - '&7Clã vencedor: &f%winner%'
+    - '&5Úlimo clã: &d%last_clan%'
+  TimeToPrint: '%glad_tag §aO Vocês possúem &f%time% &asegundos para tirar print'
+  
+  
 

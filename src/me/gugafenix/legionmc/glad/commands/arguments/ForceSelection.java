@@ -12,6 +12,8 @@ import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.player.GladPlayer.SelectionStatus;
 import me.gugafenix.legionmc.glad.tasks.Tasks;
 import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class ForceSelection {
 	
@@ -20,7 +22,7 @@ public class ForceSelection {
 		Gladiator glad = Gladiator.getGladRunning();
 		
 		if (!p.hasPermission("*")) {
-			p.sendMessage("§cVocê não tem permissão para isto");
+			p.sendMessage(PlaceHolder.replace(p, Messages.permission));
 			return;
 		}
 		

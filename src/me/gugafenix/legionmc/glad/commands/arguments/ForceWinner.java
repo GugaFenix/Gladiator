@@ -12,6 +12,8 @@ import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.objects.Gladiator;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.utils.API;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class ForceWinner {
 	
@@ -21,7 +23,7 @@ public class ForceWinner {
 		GladPlayer gp = Main.getPlayerManager().getPlayer(p);
 		
 		if (!p.hasPermission("*")) {
-			p.sendMessage("§cVocê não tem permissão para isto");
+			p.sendMessage(PlaceHolder.replace(p, Messages.permission));
 			return;
 		}
 		

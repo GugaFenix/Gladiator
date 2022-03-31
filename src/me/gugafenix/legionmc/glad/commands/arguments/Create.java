@@ -4,15 +4,18 @@
 package me.gugafenix.legionmc.glad.commands.arguments;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import me.gugafenix.legionmc.glad.file.File;
 import me.gugafenix.legionmc.glad.main.Main;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class Create {
 	public void execute(CommandSender sender, String cmd, String[] args) {
 		
 		if (!sender.hasPermission("*")) {
-			sender.sendMessage("§cVocê não tem permissão para isto");
+			sender.sendMessage(PlaceHolder.replace((Player) sender, Messages.permission));
 			return;
 		}
 		

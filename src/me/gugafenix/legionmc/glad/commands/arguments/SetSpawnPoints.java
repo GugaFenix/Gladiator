@@ -11,13 +11,15 @@ import me.gugafenix.legionmc.glad.file.File;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.spawnselection.SpawnSelect;
 import me.gugafenix.legionmc.glad.spawnselection.SpawnSelectManager;
+import me.gugafenix.legionmc.glad.utils.Messages;
+import me.gugafenix.legionmc.glad.utils.PlaceHolder;
 
 public class SetSpawnPoints {
 	
 	public void execute(Player p, String cmd, String[] args) {
 		
 		if (!p.hasPermission("*")) {
-			p.sendMessage("§cVocê não tem permissão para isto");
+			p.sendMessage(PlaceHolder.replace(p, Messages.permission));
 			return;
 		}
 		

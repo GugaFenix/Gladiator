@@ -12,16 +12,15 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
 import me.HClan.Objects.Clan;
-import me.HClan.Objects.DiscordClan;
 import me.gugafenix.legionmc.glad.border.BorderManager;
 import me.gugafenix.legionmc.glad.cabin.Cabin;
 import me.gugafenix.legionmc.glad.file.File;
 import me.gugafenix.legionmc.glad.main.Main;
 import me.gugafenix.legionmc.glad.player.GladPlayer;
 import me.gugafenix.legionmc.glad.player.GladPlayer.SelectionStatus;
+import me.gugafenix.legionmc.glad.scoreboard.Scoreboard;
 import me.gugafenix.legionmc.glad.tasks.Tasks;
 import me.gugafenix.legionmc.glad.tasks.Tasks.TaskId;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 public class Gladiator {
 	private World world, DeathMatchWorld;
@@ -42,6 +41,8 @@ public class Gladiator {
 	private BorderManager border;
 	private BukkitTask runningTask;
 	private boolean randomWarriors;
+	private int timeToPrint;
+	private boolean dmBorder, battleBorder;
 	
 	// Borda
 	private int allTime;
@@ -105,7 +106,10 @@ public class Gladiator {
 		this.borderDamage = config.getInt("Borda.Dano");
 		this.allTime = config.getInt("Borda.Tamanho.TempoTotal");
 		this.timeToStartBorder = config.getInt("Borda.TempoParaIniciarRedução");
+		this.dmBorder = config.getBoolean("Borda.DeathMatch.Ativada");
+		this.battleBorder = config.getBoolean("Borda.Arena.Ativada");
 		
+		this.timeToPrint = config.getInt("Evento.TempoParaPrint");
 		createTaskExecutor();
 	}
 	
@@ -126,6 +130,8 @@ public class Gladiator {
 	public double getBorderDamage() { return borderDamage; }
 	
 	public void setPlayers(List<GladPlayer> players) { this.players = players; }
+	
+	public int getTimeToPrint() { return timeToPrint; }
 	
 	public int getTimeBelowWarns() { return timeBelowWarns; }
 	
@@ -150,6 +156,14 @@ public class Gladiator {
 	public List<GladPlayer> getPlayers() { return players; }
 	
 	public BorderManager getBorder() { return border; }
+	
+	public boolean DmBorder() { return dmBorder; }
+	
+	public void setDmBorder(boolean dmBorder) { this.dmBorder = dmBorder; }
+	
+	public boolean BattleBorder() { return battleBorder; }
+	
+	public void setBattleBorder(boolean battleBorder) { this.battleBorder = battleBorder; }
 	
 	public void setBorder(BorderManager border) { this.border = border; }
 	
@@ -225,16 +239,16 @@ public class Gladiator {
 		if (getPlayers() != null && !getPlayers().isEmpty() && this.getClans().size() > 0) {
 			
 			getPlayers().forEach(p -> {
-				p.getPlayer().teleport(Bukkit.getServer().getWorld(Bukkit.getWorlds().get(0).getName()).getSpawnLocation());
+				
+				Scoreboard score = Main.getScoreBoardManager().getScoreBoard(p.getPlayer());
+				if (score != null) score.destroy();
+				
+				p.getPlayer().teleport(GladPlayer.unserialize(getPreset().getConfig().getString("Lobby")));
 				p.setInGladiator(false);
 				p.setSelectedPlayers(null);
 				p.setSelectionStatus(SelectionStatus.NO_STATUS);
-				
-				DiscordClan dc = p.getClan().getDiscordClan();
-				TextChannel channel = dc.getChannelAvisos();
-				dc.sendMessage(channel, dc.getRole() + " **O gladiador foi cancelado.**");
-				
 			});
+			
 			Main.getPlayerManager().getPlayers().clear();
 			getPlayers().clear();
 		}
@@ -261,11 +275,9 @@ public class Gladiator {
 	public boolean isRandomWarriors() { return randomWarriors; }
 	
 	public void setRandomWarriors(boolean randomWarriors) { this.randomWarriors = randomWarriors; }
-
-	public int getTimeToStartBorder() {
-	return timeToStartBorder; }
-
-	public int getTimeToAgroup() {
-	return timeToAgroup; }
+	
+	public int getTimeToStartBorder() { return timeToStartBorder; }
+	
+	public int getTimeToAgroup() { return timeToAgroup; }
 	
 }
